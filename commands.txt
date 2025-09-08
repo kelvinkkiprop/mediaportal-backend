@@ -1,0 +1,144 @@
+===============================================LARAVEL===============================================
+1. Installation
+composer create-project laravel/laravel mediaportal-backend
+cd mediaportal-backend
+php artisan serve --port=8000
+php artisan serve
+
+2. API Route
+$ php artisan install:api
+
+3. Seeders
+php artisan make:seeder UserSeeder
+php artisan make:seeder UserStatusSeeder
+php artisan make:seeder RoleSeeder
+php artisan make:seeder CountrySeeder
+php artisan make:seeder MediaTagSeeder
+
+
+4. Controllers
+php artisan make:controller Main/DashboardController
+php artisan make:controller Main/AuthController
+php artisan make:controller Main/UserController --api --resource
+php artisan make:controller Main/TopicController --api --resource
+php artisan make:controller Main/HomeController
+php artisan make:controller Settings/InterestController --api --resource
+php artisan make:controller Settings/PaymentMethodController --api --resource
+
+
+5.Models
+php artisan make:model Main/Media -m
+php artisan make:model Main/MediaCategory -m
+php artisan make:model Main/MediaStatus -m
+php artisan make:model Main/MediaModule -m
+php artisan make:model Main/MediaModuleReaction -m
+php artisan make:model Main/MediaTag -m
+php artisan make:model Main/Interest -m
+php artisan make:model Main/Institution -m
+php artisan make:model Main/InterestUser -m
+php artisan make:model Main/SpecialityUser -m
+php artisan make:model Main/Payment -m
+php artisan make:model Settings/InstructorType -m
+php artisan make:model Settings/Role -m
+php artisan make:model Settings/UserStatus -m
+php artisan make:model Settings/ClassLevel -m
+php artisan make:model Settings/Subject -m
+php artisan make:model Settings/AccessType -m
+php artisan make:model Settings/VideoStatus -m
+php artisan make:model Settings/PaymentMethod -m
+php artisan make:model Settings/PaymentStatus -m
+php artisan make:model Other/Country -m
+php artisan make:model Other/County -m
+php artisan make:model Other/Constituency -m
+
+
+5. Migrate
+php artisan migrate --path=/database/migrations/2024_05_25_203127_create_blog_posts_table.php
+
+6. Mails
+php artisan make:mail GenericMail
+
+7. Jobs
+php artisan queue:table
+
+7. Middleware
+i. Create
+php artisan make:middleware AdminsOnly
+php artisan make:middleware MentorsOnly
+php artisan make:middleware AdminOrMentorsOnly
+ii. Assigning Middleware To Routes: Within App\Http\Kernel class
+protected $routeMiddleware = [
+    //Add
+    'adminonly' => \App\Http\Middleware\AdminsOnly::class,
+    'mentoronly' => \App\Http\Middleware\MentorsOnly::class,
+    'adminormentoronly' => \App\Http\Middleware\AdminOrMentorsOnly::class,
+];
+
+8. Services
+Under app/Services/ create
+VideoCipherService.php
+
+9. Commands
+php artisan make:command GetVideoStatus
+===============================================./LARAVEL===============================================
+
+
+===============================================DEPLOY===============================================
+C. DEPLOY LARAVEL TO LINUX
+1. Install Apache Web Server
+$ sudo apt install apache2
+-Check Apache Server Status
+$ sudo systemctl status apache2
+
+2. Install PHP
+sudo apt install php8.1 libapache2-mod-php8.1
+-Restart Apache for the PHP module to get loaded:
+sudo systemctl restart apache2
+- Test if PHP is working correctly:
+sudo nano /var/www/html/test.php
+-And add the call to the phpinfo function:
+<?php
+phpinfo();
+?>
+To save, hit CTRL+O, and to exit, hit CTRL+X Then, open the web browser and go to http://Your-serverIP/test.php.
+
+3. Download and Install a Database Manager
+Download and Install a Database Manager
+sudo apt install mysql-server
+
+4.  Install Composer
+-Download Composer.
+curl -sS https://getcomposer.org/installer | sudo php
+or
+sudo curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin
+or
+curl -sS https://getcomposer.org/installer | php
+- Make composer executable:
+sudo mv composer.phar /usr/local/bin/composer
+
+5. Using Laravel to Deploy an Application
+It is necessary to create a new virtual host for the project. It can be done easily with the commands below:
+$ sudo vi /etc/apache2/sites-available/laravel_konza_oss_software_vendors_portal.conf
+- Add the following to create the new Virtual host. Remember to replace thedomain.com with your server’s IP address.
+
+<VirtualHost *:80>
+   ServerName api.cms.konza.go.ke
+   ServerAdmin kkiprop@konza.go.ke
+   DocumentRoot /var/www/html/mediaportal-backend/public
+
+   <Directory /var/www/html/mediaportal-backend>
+       AllowOverride All
+   </Directory>
+   ErrorLog ${APACHE_LOG_DIR}/error.log
+   CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+- Save the file and close it. After that, disable the default configuration file of the virtual hosts in Apache with this command:
+sudo a2dissite 000-default.conf
+- Afterwards, enable the new virtual host:
+sudo a2ensite laravel_konza_oss_software_vendors_portal
+-Restart
+$ systemctl reload apache2
+===============================================./DEPLOY===============================================
+
+
