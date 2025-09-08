@@ -87,6 +87,7 @@ php artisan make:command GetVideoStatus
 C. DEPLOY LARAVEL TO LINUX
 1. Install Apache Web Server
 $ sudo apt install apache2
+
 -Check Apache Server Status
 $ sudo systemctl status apache2
 
@@ -118,14 +119,13 @@ sudo mv composer.phar /usr/local/bin/composer
 
 5. Using Laravel to Deploy an Application
 It is necessary to create a new virtual host for the project. It can be done easily with the commands below:
-$ sudo vi /etc/apache2/sites-available/laravel_konza_oss_software_vendors_portal.conf
+$ sudo vi /etc/apache2/sites-available/laravel_mediaportal.conf
 - Add the following to create the new Virtual host. Remember to replace thedomain.com with your server’s IP address.
 
 <VirtualHost *:80>
    ServerName api.cms.konza.go.ke
    ServerAdmin kkiprop@konza.go.ke
    DocumentRoot /var/www/html/mediaportal-backend/public
-
    <Directory /var/www/html/mediaportal-backend>
        AllowOverride All
    </Directory>
@@ -134,9 +134,9 @@ $ sudo vi /etc/apache2/sites-available/laravel_konza_oss_software_vendors_portal
 </VirtualHost>
 
 - Save the file and close it. After that, disable the default configuration file of the virtual hosts in Apache with this command:
-sudo a2dissite 000-default.conf
+$ sudo a2dissite 000-default.conf
 - Afterwards, enable the new virtual host:
-sudo a2ensite laravel_konza_oss_software_vendors_portal
+$ sudo a2ensite laravel_mediaportal
 -Restart
 $ systemctl reload apache2
 ===============================================./DEPLOY===============================================
