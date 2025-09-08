@@ -139,10 +139,14 @@ $ sudo a2dissite 000-default.conf
 $ sudo a2ensite laravel_mediaportal
 -Restart
 $ systemctl reload apache2
-===============================================./DEPLOY===============================================
-
 
 - Give proper permissions to the project directory.
 sudo chgrp -R www-data /var/www/html/mediaportal-backend
 sudo chmod -R 775 /var/www/html/mediaportal-backend/storage
+sudo chown -R www-data:www-data /var/www/html/mediaportal-backend
+===============================================./DEPLOY===============================================
+
+
+
+
 
