@@ -31,7 +31,7 @@ return [
     'allowed_origins' => [
         'http://localhost:4200',
         'http://localhost:8000',
-        'https://mediacms.konza.go.ke',
+        'https://cms.konza.go.ke',
     ],
 
     'allowed_origins_patterns' => [],

@@ -83,70 +83,254 @@ php artisan make:command GetVideoStatus
 ===============================================./LARAVEL===============================================
 
 
-===============================================DEPLOY===============================================
-C. DEPLOY LARAVEL TO LINUX
-1. Install Apache Web Server
-$ sudo apt install apache2
+===============================================NGINX===============================================
+F. NGINX SERVER
+1. Installation
+-install NGINX:
+$ sudo apt install nginx
+-remove NGINX:
+(
+$ sudo apt remove nginx
+- to purge NGINX (uninstall NGINX from the system):
+$ sudo apt purge nginx
+)
+- reinstall NGINX.
+$ sudo apt reinstall nginx
 
--Check Apache Server Status
-$ sudo systemctl status apache2
+2. Configuring Laravel on Ubuntu 22.04 with nginix
+- Provide the web server clients the write access to the data storage and cache directories
+$ sudo chown -R www-data.www-data /var/www/html/mediaportal-backend/storage
+$ sudo chown -R www-data.www-data /var/www/html/mediaportal-backend/bootstrap/cache
+- Add a new virtual host config file to /etc/nginx/sites-available:
+$ sudo vim /etc/nginx/sites-available/laravel_mediaportal_backend
 
-2. Install PHP
-sudo apt install php8.1 libapache2-mod-php8.1
--Restart Apache for the PHP module to get loaded:
-sudo systemctl restart apache2
-- Test if PHP is working correctly:
-sudo nano /var/www/html/test.php
--And add the call to the phpinfo function:
-<?php
-phpinfo();
-?>
-To save, hit CTRL+O, and to exit, hit CTRL+X Then, open the web browser and go to http://Your-serverIP/test.php.
+- Open /etc/nginx/sites-available/laravel_mediaportal_backend then paste the code:
+server {
+ listen 80;
+    server_name api.cms.konza.go.ke;
+    root /var/www/html/mediaportal-backend/public;
 
-3. Download and Install a Database Manager
-Download and Install a Database Manager
-sudo apt install mysql-server
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
 
-4.  Install Composer
--Download Composer.
-curl -sS https://getcomposer.org/installer | sudo php
-or
-sudo curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin
-or
-curl -sS https://getcomposer.org/installer | php
-- Make composer executable:
-sudo mv composer.phar /usr/local/bin/composer
+    index index.html index.htm index.php;
 
-5. Using Laravel to Deploy an Application
-It is necessary to create a new virtual host for the project. It can be done easily with the commands below:
-$ sudo vi /etc/apache2/sites-available/laravel_mediaportal.conf
-- Add the following to create the new Virtual host. Remember to replace thedomain.com with your server’s IP address.
+    charset utf-8;
 
-<VirtualHost *:80>
-   ServerName api.cms.konza.go.ke
-   ServerAdmin kkiprop@konza.go.ke
-   DocumentRoot /var/www/html/mediaportal-backend/public
-   <Directory /var/www/html/mediaportal-backend>
-       AllowOverride All
-   </Directory>
-   ErrorLog ${APACHE_LOG_DIR}/error.log
-   CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
 
-- Save the file and close it. After that, disable the default configuration file of the virtual hosts in Apache with this command:
-$ sudo a2dissite 000-default.conf
-- Afterwards, enable the new virtual host:
-$ sudo a2ensite laravel_mediaportal
--Restart
-$ systemctl reload apache2
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
 
-- Give proper permissions to the project directory.
-sudo chgrp -R www-data /var/www/html/mediaportal-backend
-sudo chmod -R 775 /var/www/html/mediaportal-backend/storage
-sudo chown -R www-data:www-data /var/www/html/mediaportal-backend
-===============================================./DEPLOY===============================================
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+- Create a symbolic link in sites-enabled to enable the new virtual host config file:
+$ sudo ln -s /etc/nginx/sites-available/laravel_mediaportal_backend /etc/nginx/sites-enabled/
+OR (force)
+$ sudo ln -sf /etc/nginx/sites-available/laravel_mediaportal_backend
+- Ensure that there are no syntax problems in the configuration, use:
+$ sudo nginx -t
+- Reload Nginx to apply the changes and to do that paste the below code
+$ sudo systemctl reload nginx
+
+3. permissions
+$ sudo chown -R www-data:www-data /var/www/html/mediaportal-backend/database
+$ sudo chmod -R 775 /var/www/html/mediaportal-backend/
+$ sudo php artisan config:clear
+$ sudo php artisan cache:clear
+$ sudo php artisan config:cachea
+
+4. Reference
+https://technoracle.com/install-laravel-on-ubuntu-22-04/
+===============================================./NGINX===============================================
+
+===============================================SQL===============================================
+1. Launch MySQL
+$ sudo mysql -u root -p OR sudo mysql -p -u root
+$ sudo mysql -u admin -p OR sudo mysql -p -u admin
+
+2. Show Database
+$ SHOW DATABASES
+3. Select DB
+$ USE media_portal;
+
+4. Table Manipulation
+i. Create Column
+ALTER TABLE payments ADD COLUMN convenience_fee VARCHAR(255) DEFAULT '0';
+ALTER TABLE visits ADD COLUMN convenience_fee VARCHAR(255) DEFAULT '0';
+===============================================./SQL===============================================
+
+
+===============================================SUPERVISOR===============================================
+E. SUPERVISOR
+1. Install
+- How to use supervisor to process jobs in Laravel in Linux Server
+$ sudo apt-get install supervisor
+$ sudo vi /etc/supervisor/conf.d/laravel-mediaportal-worker.conf
+[program:laravel-mediaportal-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=/usr/bin/php /var/www/html/mediaportal-backend/artisan queue:work database --sleep=3 --tries=3
+autostart=true
+autorestart=true
+user=root
+numprocs=5
+redirect_stderr=true
+stdout_logfile=/var/www/html/mediaportal-backend/storage/logs/worker.log
+
+2. Use
+- Press ESC
+- Then :wq
+$ sudo supervisorctl reread
+$ sudo supervisorctl update
+$ sudo supervisorctl start 'laravel-mediaportal-worker:*'
+OR
+$ sudo supervisorctl start laravel-mediaportal-worker.conf
+$ supervisorctl restart laravel-mediaportal-worker:*
+
+-Check if supervisor is running
+$ ps aux | grep artisan
+
+supervisorctl commands
+sudo supervisorctl stop all
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start all
+
+Reference:
+https://laravel.com/docs/6.x/queues#supervisor-configuration
+
+3. Unistall
+- remove the package
+$ sudo apt-get remove supervisor
+- remove the package and all config
+$ sudo apt-get purge supervisor
+===============================================./SUPERVISOR===============================================
+
+
+===============================================VIDEOCIPHER===============================================
+1. Add to .env
+VIDEO_CIPHER_KEY="Apisecret TmHpMxquY8nZi6iL6cyVN8WxtQX1DwGO05VecjtJiZl806TxI7QtDQtGosPbUQ1R"
+VIDEO_CIPHER_BASE_URL=https://dev.vdocipher.com/api
+
+5. Reference
+https://www.vdocipher.com/docs/swagger/index.html
+===============================================./VIDEOCIPHER===============================================
 
 
 
+===============================================CRON-JOBS===============================================
+1. Change Timezone
+-Add this to .env:
+TIME_ZONE = 'put_your/timezone_here' e,g, 'Africa/Nairobi'
 
+- And in /config/app.php change:
+'timezone' => 'UTC',
+to:
+'timezone' => env('TIME_ZONE', 'UTC'),
+
+2. Create and Customize command
+php artisan make:command SendVisitReminder
+php artisan make:command SendWeeklyReport
+- In the handle() method, perform whatever action you intend it to perform
+3. Test command
+$ php artisan app:get-video-status
+4. Reference
+https://www.educative.io/answers/how-to-create-a-custom-artisan-command-in-laravel
+
+5.  Scheduling the Commands
+- routes/console.php
+Schedule::command('app:get-video-status')->everyMinute();
+;
+6. Check Status
+php artisan schedule:list
+
+7.a. Using  Cron Job
+- Add a Cron Job
+crontab -e
+- Add the following line to the file:
+* * * * * cd /var/www/html/mediaportal-backend && php artisan schedule:run >> /dev/null 2>&1
+
+- Verify Cron Job (ensure the cron job is set up correctly)
+crontab -l
+- Check Cron Logs/Monitor cron logs to verify that the job is being executed as expected
+grep CRON /var/log/syslog OR/or grep cron /var/log/cron
+
+OR
+
+7.b. Using Supervisor
+- Supervisor Configuration for Scheduler (laravel-mediaportal-backend-worker.conf)
+
+$ sudo vi /etc/supervisor/conf.d/laravel-mediaportal-backend-worker.conf
+[program:laravel-mediaportal-backend-worker]
+process_name=%(program_name)s_%(process_num)02d
+command=/usr/bin/php /var/www/html/mediaportal-backend/artisan queue:work database --sleep=3 --tries=3
+autostart=true
+autorestart=true
+user=root
+numprocs=5
+redirect_stderr=true
+stdout_logfile=/var/www/html/mediaportal-backend/storage/logs/worker.log
+
+8. Update Supervisor and Start
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start 'laravel-mediaportal-backend-worker.conf:*'
+OR
+$ sudo supervisorctl start laravel-mediaportal-backend-worker.conf
+$ supervisorctl restart laravel-mediaportal-backend-worker:*
+
+9. Verify Everything is Working
+Check the log file (/var/www/html/mediaportal-backend/storage/logs/worker.log)
+===============================================./CRON-JOBS===============================================
+
+
+===============================================CERTBOT===============================================
+I. INSTALL
+1.Install snapd
+$ sudo snap install core; sudo snap refresh core
+
+2.Remove certbot-auto and any Certbot OS packages
+$ sudo snap remove certbot
+$ sudo apt-get remove certbot, sudo dnf remove certbot, or sudo yum remove certbot
+
+3.Install Certbot
+$ sudo apt  install certbot
+$ sudo snap install --classic certbot
+
+4.Prepare the Certbot command
+$ sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+5. Choose how you'd like to run Certbot
+$ sudo certbot --nginx
+
+6. Test automatic renewal
+$ sudo certbot renew --dry-run
+
+7. Confirm that Certbot worked
+$ visit https://yourwebsite.com/
+
+8.Reference
+https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
+
+
+II. UNINSTALL
+1. Clean up/delete certbot:
+$ sudo certbot certificates
+2. Will list certbot installed
+$ sudo certbot delete
+===============================================./CERTBOT===============================================
 
