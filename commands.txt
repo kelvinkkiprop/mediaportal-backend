@@ -298,6 +298,7 @@ Check the log file (/var/www/html/mediaportal-backend/storage/logs/worker.log)
 ===============================================./CRON-JOBS===============================================
 
 
+
 ===============================================CERTBOT===============================================
 I. INSTALL
 1.Install snapd
@@ -326,7 +327,6 @@ $ visit https://yourwebsite.com/
 8.Reference
 https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
 
-
 II. UNINSTALL
 1. Clean up/delete certbot:
 $ sudo certbot certificates
@@ -334,8 +334,7 @@ $ sudo certbot certificates
 $ sudo certbot delete
 ===============================================./CERTBOT===============================================
 
-
-===============================================ffmpeg===============================================
+===============================================FFMPEG===============================================
 1. Installation
 sudo apt install ffmpeg -y
 
@@ -370,6 +369,5 @@ private function getFFmpegPath(): string
 
     throw new Exception("FFmpeg not found. Please install FFmpeg and ensure it's accessible.");
 }
-
-===============================================./ffmpeg===============================================
+===============================================./FFMPEG===============================================
 
