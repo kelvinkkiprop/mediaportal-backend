@@ -29,7 +29,6 @@ return [
         'http://localhost:4200',      // Angular dev
         'http://localhost:8000',      // Laravel local
         'https://cms.konza.go.ke',    // frontend
-        'https://api.cms.konza.go.ke' // backend API
     ],
 
     'allowed_origins_patterns' => [],
