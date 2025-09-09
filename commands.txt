@@ -334,3 +334,42 @@ $ sudo certbot certificates
 $ sudo certbot delete
 ===============================================./CERTBOT===============================================
 
+
+===============================================ffmpeg===============================================
+1. Installation
+sudo apt install ffmpeg -y
+
+2. Check Version
+/usr/bin/ffmpeg -version
+which ffmpeg
+
+3. Fix getFFmpegPath() for Ubuntu
+private function getFFmpegPath(): string
+{
+    $possiblePaths = [
+        env('FFMPEG_PATH'), // optionally set in .env
+        '/usr/bin/ffmpeg',  // typical path on Ubuntu/Debian
+        '/usr/local/bin/ffmpeg',
+        'ffmpeg',           // rely on PATH
+        'C:\\ffmpeg\\bin\\ffmpeg.exe', // Windows
+        'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe',
+    ];
+
+    foreach ($possiblePaths as $path) {
+        if (!$path) continue;
+
+        if ($path === 'ffmpeg') {
+            exec('which ffmpeg 2>/dev/null', $output, $returnVar);
+            if ($returnVar === 0 && !empty($output)) {
+                return trim($output[0]); // full path
+            }
+        } elseif (file_exists($path)) {
+            return $path;
+        }
+    }
+
+    throw new Exception("FFmpeg not found. Please install FFmpeg and ensure it's accessible.");
+}
+
+===============================================./ffmpeg===============================================
+

@@ -37,19 +37,15 @@ class TranscodeMedia implements ShouldQueue
 
             // Update status to processing
             $media->update(['status_id' => 1]); // Processing
-
             Log::info("Starting transcoding for media ID: {$this->mediaId}");
-
             $this->transcodeVideo($media);
 
         } catch (Exception $e) {
             Log::error("TranscodeMedia job failed for media ID {$this->mediaId}: " . $e->getMessage());
-
             // Update media status to failed
             if ($media = Media::find($this->mediaId)) {
                 $media->update(['status_id' => 3]); // Failed
             }
-
             throw $e; // Re-throw to trigger job retry if attempts remaining
         }
     }
@@ -64,7 +60,6 @@ class TranscodeMedia implements ShouldQueue
 
         // Create output directory with proper permissions
         $outputDir = $this->createOutputDirectory();
-
         // Define renditions
         $renditions = [
             ['name' => '360p', 'scale' => '640:360', 'bitrate' => '800k', 'maxrate' => '856k'],
@@ -97,7 +92,6 @@ class TranscodeMedia implements ShouldQueue
         if (empty($successfulRenditions)) {
             throw new Exception("All renditions failed to process");
         }
-
         // Save master playlist
         $masterPlaylistPath = "{$outputDir}/master.m3u8";
         if (!file_put_contents($masterPlaylistPath, $masterPlaylist)) {
@@ -135,7 +129,6 @@ class TranscodeMedia implements ShouldQueue
 
         Log::error("Original file not found. Tried paths: " . implode(', ', $possiblePaths));
         Log::error("Media src_path: {$media->src_path}");
-
         return null;
     }
 
@@ -149,11 +142,9 @@ class TranscodeMedia implements ShouldQueue
                 throw new Exception("Failed to create output directory: {$outputDir}");
             }
         }
-
         if (!is_writable($outputDir)) {
             throw new Exception("Output directory is not writable: {$outputDir}");
         }
-
         return $outputDir;
     }
 
@@ -221,11 +212,20 @@ class TranscodeMedia implements ShouldQueue
 
     private function getFFmpegPath(): string
     {
-        // Check multiple possible FFmpeg locations
+        // // Check multiple possible FFmpeg locations
+        // $possiblePaths = [
+        //     'C:\\ffmpeg\\bin\\ffmpeg.exe',
+        //     'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe',
+        //     'ffmpeg', // System PATH
+        // ];
+
         $possiblePaths = [
-            'C:\\ffmpeg\\bin\\ffmpeg.exe',
+            env('FFMPEG_PATH'), // optionally set in .env
+            '/usr/bin/ffmpeg',  // typical path on Ubuntu/Debian
+            '/usr/local/bin/ffmpeg',
+            'ffmpeg',           // rely on PATH
+            'C:\\ffmpeg\\bin\\ffmpeg.exe', // Windows
             'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe',
-            'ffmpeg', // System PATH
         ];
 
         foreach ($possiblePaths as $path) {
@@ -239,7 +239,6 @@ class TranscodeMedia implements ShouldQueue
                 return $path;
             }
         }
-
         throw new Exception("FFmpeg not found. Please install FFmpeg and ensure it's accessible.");
     }
 
@@ -253,7 +252,6 @@ class TranscodeMedia implements ShouldQueue
     public function failed(Exception $exception): void
     {
         Log::error("TranscodeMedia job permanently failed for media ID {$this->mediaId}: " . $exception->getMessage());
-
         // Update media status to failed
         if ($media = Media::find($this->mediaId)) {
             $media->update(['status_id' => 3]); // Failed

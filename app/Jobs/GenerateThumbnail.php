@@ -63,11 +63,20 @@ class GenerateThumbnail implements ShouldQueue
 
     private function getFFmpegPath(): string
     {
+        // $possiblePaths = [
+        //     env('FFMPEG_PATH'), // optionally set in .env
+        //     'C:\\ffmpeg\\bin\\ffmpeg.exe',
+        //     'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe',
+        //     'ffmpeg', // system PATH
+        // ];
+
         $possiblePaths = [
             env('FFMPEG_PATH'), // optionally set in .env
-            'C:\\ffmpeg\\bin\\ffmpeg.exe',
+            '/usr/bin/ffmpeg',  // typical path on Ubuntu/Debian
+            '/usr/local/bin/ffmpeg',
+            'ffmpeg',           // rely on PATH
+            'C:\\ffmpeg\\bin\\ffmpeg.exe', // Windows
             'C:\\Program Files\\ffmpeg\\bin\\ffmpeg.exe',
-            'ffmpeg', // system PATH
         ];
 
         foreach ($possiblePaths as $path) {
