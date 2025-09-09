@@ -239,6 +239,7 @@ class TranscodeMedia implements ShouldQueue
                 return $path;
             }
         }
+        Log::error("FFmpeg not found. Please install FFmpeg and ensure it's accessible");
         throw new Exception("FFmpeg not found. Please install FFmpeg and ensure it's accessible.");
     }
 

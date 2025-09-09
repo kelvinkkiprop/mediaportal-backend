@@ -65,8 +65,8 @@ return [
 
     // 'url' => env('APP_URL', 'http://localhost'),
     //Update
-    'url' => env('APP_URL', 'http://localhost:4200'),
-    'asset_url' => env('ASSET_URL', 'http://localhost:8000'),
+    'url' => env('APP_URL', 'https://cms.konza.go.ke'),
+    'asset_url' => env('ASSET_URL', 'https://api.cms.konza.go.ke'),
 
     /*
     |--------------------------------------------------------------------------
