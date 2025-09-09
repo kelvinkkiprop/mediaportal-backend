@@ -48,6 +48,6 @@ return [
     'max_age' => 0,
 
     // If you’re using JWT, Sanctum or session cookies, set this to true
-    'supports_credentials' => true,
+    'supports_credentials' => false, //true,
 
 ];
