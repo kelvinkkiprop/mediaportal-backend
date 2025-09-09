@@ -15,33 +15,39 @@ return [
     |
     */
 
-    // 'paths' => ['api/*', 'sanctum/csrf-cookie'],
-    'paths' => [
+      'paths' => [
         'api/*',
         'sanctum/csrf-cookie',
         'storage/*',
-        'videos/'
+        'videos/*',
+        'upload/*', // make sure uploads are covered
     ],
 
     'allowed_methods' => ['*'],
 
-    // 'allowed_origins' => ['*'],
-
-    // Allow_only_Angular_dev_and_production_domain
     'allowed_origins' => [
-        'http://localhost:4200',
-        'http://localhost:8000',
-        'https://cms.konza.go.ke',
+        'http://localhost:4200',      // Angular dev
+        'http://localhost:8000',      // Laravel local
+        'https://cms.konza.go.ke',    // frontend
+        'https://api.cms.konza.go.ke' // backend API
     ],
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => [
+        '*',
+        'Authorization',
+        'X-Requested-With',
+        'Content-Type',
+        'Accept',
+        'Origin'
+    ],
 
     'exposed_headers' => [],
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    // If you’re using JWT, Sanctum or session cookies, set this to true
+    'supports_credentials' => true,
 
 ];
