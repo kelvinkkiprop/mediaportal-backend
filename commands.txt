@@ -298,7 +298,6 @@ Check the log file (/var/www/html/mediaportal-backend/storage/logs/worker.log)
 ===============================================./CRON-JOBS===============================================
 
 
-
 ===============================================CERTBOT===============================================
 I. INSTALL
 1.Install snapd
@@ -333,6 +332,7 @@ $ sudo certbot certificates
 2. Will list certbot installed
 $ sudo certbot delete
 ===============================================./CERTBOT===============================================
+
 
 ===============================================FFMPEG===============================================
 1. Installation
