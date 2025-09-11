@@ -20,7 +20,7 @@ php artisan make:seeder MediaTagSeeder
 php artisan make:controller Main/DashboardController
 php artisan make:controller Main/AuthController
 php artisan make:controller Main/UserController --api --resource
-php artisan make:controller Main/TopicController --api --resource
+php artisan make:controller Main/MediacategoryController --api --resource
 php artisan make:controller Main/HomeController
 php artisan make:controller Settings/InterestController --api --resource
 php artisan make:controller Settings/PaymentMethodController --api --resource
@@ -30,7 +30,7 @@ php artisan make:controller Settings/PaymentMethodController --api --resource
 php artisan make:model Main/Media -m
 php artisan make:model Main/MediaCategory -m
 php artisan make:model Main/MediaStatus -m
-php artisan make:model Main/MediaModule -m
+php artisan make:model Main/MediaTag -m
 php artisan make:model Main/MediaModuleReaction -m
 php artisan make:model Main/MediaTag -m
 php artisan make:model Main/Interest -m
@@ -152,7 +152,7 @@ $ sudo chown -R www-data:www-data /var/www/html/mediaportal-backend/database
 $ sudo chmod -R 775 /var/www/html/mediaportal-backend/
 $ sudo php artisan config:clear
 $ sudo php artisan cache:clear
-$ sudo php artisan config:cachea
+$ sudo php artisan config:cache
 
 4. Reference
 https://technoracle.com/install-laravel-on-ubuntu-22-04/
