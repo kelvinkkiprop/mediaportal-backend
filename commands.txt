@@ -15,7 +15,6 @@ php artisan make:seeder RoleSeeder
 php artisan make:seeder CountrySeeder
 php artisan make:seeder MediaTagSeeder
 
-
 4. Controllers
 php artisan make:controller Main/DashboardController
 php artisan make:controller Main/AuthController
@@ -25,13 +24,12 @@ php artisan make:controller Main/HomeController
 php artisan make:controller Settings/InterestController --api --resource
 php artisan make:controller Settings/PaymentMethodController --api --resource
 
-
 5.Models
 php artisan make:model Main/Media -m
 php artisan make:model Main/MediaCategory -m
-php artisan make:model Main/MediaStatus -m
 php artisan make:model Main/MediaTag -m
-php artisan make:model Main/MediaModuleReaction -m
+php artisan make:model Main/MediaStatus -m
+php artisan make:model Main/MediaReaction -m
 php artisan make:model Main/MediaTag -m
 php artisan make:model Main/Interest -m
 php artisan make:model Main/Institution -m
@@ -47,10 +45,9 @@ php artisan make:model Settings/AccessType -m
 php artisan make:model Settings/VideoStatus -m
 php artisan make:model Settings/PaymentMethod -m
 php artisan make:model Settings/PaymentStatus -m
-php artisan make:model Other/Country -m
 php artisan make:model Other/County -m
 php artisan make:model Other/Constituency -m
-
+php artisan make:model Other/Ward -m
 
 5. Migrate
 php artisan migrate --path=/database/migrations/2024_05_25_203127_create_blog_posts_table.php
@@ -80,6 +77,10 @@ VideoCipherService.php
 
 9. Commands
 php artisan make:command GetVideoStatus
+
+10. Helpers
+php artisan make:helper Helpers/MyHelper
+
 ===============================================./LARAVEL===============================================
 
 
@@ -158,6 +159,7 @@ $ sudo php artisan config:cache
 https://technoracle.com/install-laravel-on-ubuntu-22-04/
 ===============================================./NGINX===============================================
 
+
 ===============================================SQL===============================================
 1. Launch MySQL
 $ sudo mysql -u root -p OR sudo mysql -p -u root
@@ -229,7 +231,6 @@ VIDEO_CIPHER_BASE_URL=https://dev.vdocipher.com/api
 5. Reference
 https://www.vdocipher.com/docs/swagger/index.html
 ===============================================./VIDEOCIPHER===============================================
-
 
 
 ===============================================CRON-JOBS===============================================
@@ -336,11 +337,11 @@ $ sudo certbot delete
 
 ===============================================FFMPEG===============================================
 1. Installation
-sudo apt install ffmpeg -y
+$ sudo apt install ffmpeg -y
 
 2. Check Version
 /usr/bin/ffmpeg -version
-which ffmpeg
+$ which ffmpeg
 
 3. Fix getFFmpegPath() for Ubuntu
 private function getFFmpegPath(): string

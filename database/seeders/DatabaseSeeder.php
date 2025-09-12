@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             CountySeeder::class,
             ConstituencySeeder::class,
+            WardSeeder::class,
             MediaCategorySeeder::class,
             MediaTagSeeder::class,
         ]);

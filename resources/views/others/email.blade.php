@@ -27,11 +27,11 @@
         }
 
         .my-a {
-            color: #0d6efd !important;
+            color: #198754 !important;
         }
 
         .my-a:hover {
-            color: #ffc107 !important;
+            color: #dc3545 !important;
         }
     </style>
 </head>
@@ -53,7 +53,7 @@
                         <td class="header"
                             style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; padding: 25px 0; text-align: center;">
                             <a href="{{ config('app.url') }}"
-                                style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #0d6efd; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block;">
+                                style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #198754; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block;">
                                 {{ config('app.name', 'Laravel') }}
                             </a>
                         </td>
@@ -99,7 +99,7 @@
                                                                                 <a href="{{ $data['url'] }}"
                                                                                     class="button button-primary"
                                                                                     target="_blank" rel="noopener"
-                                                                                    style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -webkit-text-size-adjust: none; border-radius: 4px; color: #fff; display: inline-block; overflow: hidden; text-decoration: none; background-color: #0d6efd; border-bottom: 8px solid #0d6efd; border-left: 18px solid #0d6efd; border-right: 18px solid #0d6efd; border-top: 8px solid #0d6efd;">
+                                                                                    style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -webkit-text-size-adjust: none; border-radius: 4px; color: #fff; display: inline-block; overflow: hidden; text-decoration: none; background-color: #198754; border-bottom: 8px solid #198754; border-left: 18px solid #198754; border-right: 18px solid #198754; border-top: 8px solid #198754;">
                                                                                     {{ $data['btn-text'] }}</a>
                                                                             </td>
                                                                         </tr>

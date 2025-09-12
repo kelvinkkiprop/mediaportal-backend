@@ -3,158 +3,356 @@
 namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+// Add
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Log;
+use App\Models\Main\Media;
+use App\Jobs\TranscodeMedia;
+use Illuminate\Support\Str;
 
 class MediaController extends Controller
 {
-
-    public function stream($id, $file)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $path = storage_path("app/public/videos/processed/$id/$file");
-
-        if (!file_exists($path)) {
-            abort(404);
-        }
-
-        return response()->file($path)
-            ->header('Access-Control-Allow-Origin', '*')
-            ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-            ->header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
+        return Media::orderBy('created_at', 'desc')->paginate(10);
     }
 
-    // public function stream($videoId, $file)
-    // {
-    //     $path = "videos/processed/{$videoId}/{$file}";
-
-    //     if (!Storage::disk('public')->exists($path)) {
-    //         abort(404, "File not found");
-    //     }
-
-    //     return response()->file(storage_path("app/public/{$path}"))
-    //         ->header('Access-Control-Allow-Origin', '*')
-    //         ->header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-    //         ->header('Access-Control-Allow-Headers', 'Content-Type');
-    // }
-
-
-    public function streamMaster($videoId)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
     {
-        $path = "videos/processed/{$videoId}/master.m3u8";
-        // return $path;
-        if (!Storage::disk('public')->exists($path)) {
-            abort(404, "Master playlist not found");
-        }
-        return response()->file(Storage::disk('public')->path($path), [
-            'Content-Type' => 'application/vnd.apple.mpegurl'
+        $fields = $request->validate([
+            'name' => 'required|string',
         ]);
-    }
 
-    // e.g., 360p/index.m3u8, etc
-    public function streamVariant($videoId, $resolution, $file)
-    {
-        $path = "videos/{$videoId}/{$resolution}/{$file}";
-
-        if (!Storage::disk('public')->exists($path)) {
-            abort(404, "Variant or segment not found");
-        }
-
-        $extension = pathinfo($file, PATHINFO_EXTENSION);
-
-        $contentType = $extension === 'm3u8'
-            ? 'application/vnd.apple.mpegurl'
-            : 'video/MP2T';
-
-        return response()->file(Storage::disk('public')->path($path), [
-            'Content-Type' => $contentType
+        $item = Media::create([
+            'name' => $fields['name'],
         ]);
+
+        $response =[
+            'status' => 'success',
+            'message' => 'Media created successfully',
+            'item' => $item
+        ];
+        return response($response, 201);
+
     }
 
-
-
-
-
-
-
-    public function streamOriginal($id): StreamedResponse
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
-        $path = "videos/originals/{$id}.mp4";
-
-        // Use the disk where your files are actually stored
-        $disk = 'public'; // change to 'private' if your videos are on private storage
-
-        if (!Storage::disk($disk)->exists($path)) {
-            abort(404, 'Video not found');
-        }
-
-        $fullPath = Storage::disk($disk)->path($path);
-
-        return response()->stream(function () use ($fullPath) {
-            $stream = fopen($fullPath, 'rb');
-            fpassthru($stream);
-            fclose($stream);
-        }, 200, [
-            'Content-Type' => 'video/mp4',
-            'Accept-Ranges' => 'bytes'
-        ]);
+        return Media::find($id);
     }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+       $fields = $request->validate([
+            'name' => 'required|string',
+        ]);
+
+        $item = Media::where('id', $id)->update([
+            'name' => $fields['name'],
+        ]);
+
+        return response([
+            'status' => 'success',
+            'message' => 'Media updated successfully',
+            'data' => $item
+        ],201);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        $item = Media::find($id);
+        $item->delete();
+
+        $response =[
+            'message' => 'Media removed successfully',
+            'item' => $item
+        ];
+        return response($response, 201);
+    }
+
+
+    /**
+     * searchItems
+     */
+    public function searchItems(Request $request)
+    {
+        $fields = $request->validate([
+            'search_term' => 'required|string'
+        ]);
+
+        $term = $fields['search_term'];
+        $items = Media::where(function($query) use($term){
+            $query->where('name','LIKE','%'.$term.'%');
+            $query->orWhere('alias','LIKE','%'.$term.'%');
+        })->get();
+
+        $response =[
+            'status' => 'success',
+            'message' => 'Media search complete',
+            'data' => $items
+        ];
+        return response($response, 201);
+    }
+
+
+
+
+
+
 
 
 
     /**
-     * Stream HLS playlist or segments
-     *
-     * @param string $id   Video folder ID
-     * @param string $file File name (master.m3u8 or .ts segment)
-     * @return StreamedResponse
-     */
-    public function streamHLS($id, $file): StreamedResponse
+    * init
+    */
+    public function init(Request $request)
     {
-        // Build path relative to storage disk
-        $path = "videos/processed/{$id}/{$file}";
+        $request->validate([
+            'filename' => 'required|string',
+            'title'    => 'required|string|max:255',
+        ]);
 
-        // Files are under public disk
-        $disk = 'public';
+        $uploadId = Str::uuid()->toString();
 
-        if (!Storage::disk($disk)->exists($path)) {
-            abort(404, 'File not found');
+        // Use public disk for chunks as well for consistency
+        Storage::disk('public')->makeDirectory("uploads/chunks/$uploadId");
+
+        Log::info('Upload initialized', [
+            'upload_id' => $uploadId,
+            'filename' => $request->filename,
+            'title' => $request->title
+        ]);
+
+        return response()->json(['uploadId' => $uploadId]);
+    }
+
+    /**
+    * chunk
+    */
+    public function chunk(Request $request)
+    {
+        $request->validate([
+            'uploadId'   => 'required|string',
+            'chunkIndex' => 'required|integer',
+            'file'       => 'required|file',
+        ]);
+
+        $uploadId = $request->uploadId;
+        $chunkIndex = $request->chunkIndex;
+        $chunkPath = "uploads/chunks/{$uploadId}/chunk_{$chunkIndex}";
+
+        // Use public disk consistently
+        Storage::disk('public')->put($chunkPath, file_get_contents($request->file('file')));
+
+        Log::debug("Chunk received", [
+            'upload_id' => $uploadId,
+            'chunk_index' => $chunkIndex,
+            'chunk_size' => $request->file('file')->getSize()
+        ]);
+
+        return response()->json(['status' => 'chunk_received']);
+    }
+
+    /**
+    * complete
+    */
+    public function complete(Request $request)
+    {
+        try {
+            $request->validate([
+                'uploadId'    => 'required|string',
+                'totalChunks' => 'required|integer',
+                'title'       => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ]);
+
+            $uploadId = $request->uploadId;
+            $totalChunks = $request->totalChunks;
+
+            Log::info('Starting upload completion', [
+                'upload_id' => $uploadId,
+                'total_chunks' => $totalChunks
+            ]);
+
+            // Use public disk consistently
+            $disk = Storage::disk('public');
+            $finalPath = "videos/originals/{$uploadId}.mp4";
+
+            // Ensure destination directory exists
+            $disk->makeDirectory('videos/originals');
+
+            // Get absolute path for file operations
+            $absoluteFinalPath = $disk->path($finalPath);
+
+            Log::info('Merging chunks to final file', [
+                'final_path' => $finalPath,
+                'absolute_path' => $absoluteFinalPath
+            ]);
+
+            // Open destination file for writing
+            $outStream = fopen($absoluteFinalPath, 'wb'); // Use 'wb' to start fresh
+            if (!$outStream) {
+                throw new \Exception("Cannot open destination file for writing: {$absoluteFinalPath}");
+            }
+
+            $totalSize = 0;
+            $missingChunks = [];
+
+            // Merge all chunks
+            for ($i = 0; $i < $totalChunks; $i++) {
+                $chunkPath = "uploads/chunks/{$uploadId}/chunk_{$i}";
+
+                if ($disk->exists($chunkPath)) {
+                    $chunkAbsolutePath = $disk->path($chunkPath);
+                    $inStream = fopen($chunkAbsolutePath, 'rb');
+
+                    if (!$inStream) {
+                        throw new \Exception("Cannot read chunk file: {$chunkPath}");
+                    }
+
+                    $chunkSize = stream_copy_to_stream($inStream, $outStream);
+                    $totalSize += $chunkSize;
+                    fclose($inStream);
+
+                    Log::debug("Merged chunk {$i}", ['size' => $chunkSize]);
+                } else {
+                    $missingChunks[] = $i;
+                }
+            }
+
+            fclose($outStream);
+
+            if (!empty($missingChunks)) {
+                throw new \Exception("Missing chunks: " . implode(', ', $missingChunks));
+            }
+
+            // Verify the final file exists and has content
+            if (!file_exists($absoluteFinalPath)) {
+                throw new \Exception("Final file was not created: {$absoluteFinalPath}");
+            }
+
+            $finalFileSize = filesize($absoluteFinalPath);
+            if ($finalFileSize === 0) {
+                throw new \Exception("Final file is empty");
+            }
+
+            Log::info('File merge completed successfully', [
+                'final_size' => $finalFileSize,
+                'total_chunks_size' => $totalSize
+            ]);
+
+            // Clean up temporary chunk files
+            $disk->deleteDirectory("uploads/chunks/{$uploadId}");
+
+            // Save_media_record
+            $mCurrentUser = auth()->user();
+            $media = Media::create([
+                'id'             => $uploadId,
+                'title'          => $request->title,
+                'description'    => $request->description,
+                'src_path'       => $finalPath, // This should be relative to storage/app/public/
+                'file_size'      => $finalFileSize,
+                'mime_type'      => 'video/mp4',
+                'status_id'      => 1, // Uploaded, pending processing
+                'user_id'        => $mCurrentUser->id,
+                'media_status_id'=> 1, // Uploaded
+            ]);
+
+            Log::info('Media record created', [
+                'media_id' => $media->id,
+                'src_path' => $media->src_path,
+                'file_size' => $finalFileSize
+            ]);
+
+            // Verify file is accessible before dispatching job
+            $verifyPath = storage_path("app/public/{$finalPath}");
+            if (!file_exists($verifyPath)) {
+                Log::error('File not accessible at expected path', [
+                    'expected_path' => $verifyPath,
+                    'actual_path' => $absoluteFinalPath
+                ]);
+                throw new \Exception("File not accessible at expected path for transcoding");
+            }
+
+            // Dispatch transcoding job with a small delay to ensure file system has settled
+            TranscodeMedia::dispatch($media->id)->delay(now()->addSeconds(2));
+
+            Log::info('Transcoding job dispatched', ['media_id' => $media->id]);
+
+            return response()->json([
+                'success' => true,
+                'media'   => $media,
+                'status'  => 'upload_complete',
+                'file_size' => $finalFileSize
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Upload completion failed', [
+                'upload_id' => $request->uploadId ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Clean up on failure
+            if (isset($uploadId)) {
+                Storage::disk('public')->deleteDirectory("uploads/chunks/{$uploadId}");
+                if (isset($finalPath)) {
+                    Storage::disk('public')->delete($finalPath);
+                }
+            }
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Debug endpoint to check upload status
+     */
+    public function debug($uploadId)
+    {
+        $media = Media::find($uploadId);
+
+        if (!$media) {
+            return response()->json(['error' => 'Media not found'], 404);
         }
 
-        $fullPath = Storage::disk($disk)->path($path);
+        $publicPath = storage_path("app/public/{$media->src_path}");
+        $privatePath = storage_path("app/{$media->src_path}");
 
-        // Determine content type
-        $contentType = match(pathinfo($file, PATHINFO_EXTENSION)) {
-            'm3u8' => 'application/vnd.apple.mpegurl',
-            'ts'   => 'video/MP2T',
-            default => 'application/octet-stream'
-        };
-
-        return response()->stream(function () use ($fullPath) {
-            $stream = fopen($fullPath, 'rb');
-            fpassthru($stream);
-            fclose($stream);
-        }, 200, [
-            'Content-Type' => $contentType,
-            'Accept-Ranges' => 'bytes',
+        return response()->json([
+            'media' => $media,
+            'paths' => [
+                'src_path' => $media->src_path,
+                'public_disk' => [
+                    'path' => $publicPath,
+                    'exists' => file_exists($publicPath),
+                    'size' => file_exists($publicPath) ? filesize($publicPath) : 'N/A'
+                ],
+                'private_disk' => [
+                    'path' => $privatePath,
+                    'exists' => file_exists($privatePath),
+                    'size' => file_exists($privatePath) ? filesize($privatePath) : 'N/A'
+                ]
+            ]
         ]);
     }
-
-
-
-    public function getProcessedPath($mediaId, $file)
-{
-    // Path relative to public disk
-    $relativePath = "processed/{$mediaId}/{$file}";
-
-    // Full path on disk
-    $fullPath = Storage::disk('public')->path($relativePath);
-
-    // Check if file exists
-    if (!Storage::disk('public')->exists($relativePath)) {
-        throw new \Exception("Processed file not found: {$relativePath}");
-    }
-
-    return $fullPath;
-}
-
 }

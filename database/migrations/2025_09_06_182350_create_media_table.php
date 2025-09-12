@@ -13,14 +13,29 @@ return new class extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->uuid('user_id')->nullable();
             $table->string('title')->nullable();
             $table->longText('description')->nullable();
-            $table->unsignedBigInteger('status_id')->default(1);
             $table->string('src_path')->nullable();
             $table->string('hls_master')->nullable();
             $table->string('thumbnail_path')->nullable();
             $table->unsignedBigInteger('file_size')->nullable();
             $table->string('mime_type')->nullable();
+
+            $table->unsignedBigInteger('media_status_id')->default(1);
+            $table->unsignedBigInteger('status_id')->default(1);
+            $table->unsignedBigInteger('views')->default(0);
+
+            $table->unsignedBigInteger('type_id')->default(1); //Public/Private
+            $table->unsignedBigInteger('category_id')->default(1);
+            $table->boolean('allow_comments')->default(true);
+            $table->boolean('allow_download')->default(true);
+
+            $table->uuid('created_by')->nullable();
+            $table->uuid('updated_by')->nullable();
+            $table->uuid('approved_by')->nullable();
+            $table->dateTime('approved_on')->nullable();
+
             $table->timestamps();
         });
     }

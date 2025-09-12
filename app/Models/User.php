@@ -68,9 +68,12 @@ class User extends Authenticatable
         'dob',
         'county_id',
         'constituency_id',
+        'ward_id',
+        'bio',
         'receive_notifications',
 
         'referral_code',
+        'referred_by_id'
     ];
 
     /**

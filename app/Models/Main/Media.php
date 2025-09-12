@@ -35,15 +35,28 @@ class Media extends Model
         'id',
         'title',
         'description',
-        'status_id',
         'src_path',
         'hls_master',
         'thumbnail_path',
 
         'file_size',
         'mime_type',
-    ];
 
+        'user_id',
+        'media_status_id',
+        'status_id',
+        'views',
+
+        'type_id',
+        'category_id',
+        'allow_comments',
+        'allow_download',
+
+        'created_by',
+        'updated_by',
+        'approved_by',
+        'approved_on',
+    ];
 
     /**
     * appends
@@ -53,14 +66,17 @@ class Media extends Model
         'full_hls_master',
         'thumbnail_url',
         'file',
+
+        'readable_date',
+        // 'is_liked',
+        // 'is_disliked',
+        // 'likes_count',
+        // 'dislikes_count',
+        'total_views',
     ];
 
 
-    //   "src_path": "videos\/originals\/9fa75f06-5349-4fb8-99e9-21a74cc3f742.mp4",
-    // "hls_master": "videos\/processed\/9fa75f06-5349-4fb8-99e9-21a74cc3f742\/master.m3u8",
-    // "thumbnail_path": "videos\/processed\/9fa75f06-5349-4fb8-99e9-21a74cc3f742\/thumbnail.jpg",
-
-    // getMediaUrlAttribute
+    // GETTERS&SETTERS
     public function getFullSrcPathAttribute()
     {
         $value = $this->src_path;
@@ -72,7 +88,6 @@ class Media extends Model
         }
     }
 
-    // getMediaUrlAttribute
     public function getFullHlsMasterAttribute()
     {
         $value = $this->hls_master;
@@ -84,8 +99,6 @@ class Media extends Model
         }
     }
 
-
-    // getThumbnailUrlAttribute
     public function getThumbnailUrlAttribute()
     {
         $value = $this->id;
@@ -97,7 +110,6 @@ class Media extends Model
         }
     }
 
-    // getFileAttribute
     public function getFileAttribute()
     {
         $value = $this->id;
@@ -107,5 +119,50 @@ class Media extends Model
             return "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
         }
     }
+
+    public function getReadableDateAttribute()
+    {
+        // return $this->created_at ? $this->created_at->diffForHumans() : null;
+        return $this->created_at ? $this->created_at->diffForHumans([
+            'short' => false,
+            'parts' => 1,     // show_1_only_e.g._5s
+        ]) : null;
+    }
+
+    public function getTotalViewsAttribute()
+    {
+        $value = $this->views;
+        if(is_null($value)){
+            return null;
+        }else{
+            return $value==1 ? $value." view" : $value." views";
+        }
+    }
+
+    // public function getIsLikedAttribute()
+    // {
+    //     $mCurrentUser = auth()->user();
+    //     if (!$mCurrentUser) {
+    //         return 0; // false
+    //     }
+    //     return $this->reactions()->where('user_id', $mCurrentUser->id)->where('type_id', 1)->exists();
+    // }
+
+    // public function getIsDislikedAttribute()
+    // {
+    //     $mCurrentUser = auth()->user();
+    //     if (!$mCurrentUser) {
+    //         return 0; // false
+    //     }
+    //     return $this->reactions()->where('user_id', $mCurrentUser->id)->where('type_id', 2)->exists();
+    // }
+    // public function getLikesCountAttribute()
+    // {
+    //     return $this->reactions()->where('type_id', 1)->count();
+    // }
+    // public function getDislikesCountAttribute()
+    // {
+    //     return $this->reactions()->where('type_id', 2)->count();
+    // }
 
 }

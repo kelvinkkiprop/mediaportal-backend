@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Main\HomeController;
 use App\Http\Controllers\Main\AuthController;
 use App\Http\Controllers\Main\DashboardController;
-use App\Http\Controllers\Main\UploadController;
 use App\Http\Controllers\Main\MediaController;
 use App\Http\Controllers\Main\MediaCategoryController;
 use App\Http\Controllers\Main\MediaTagController;
@@ -16,10 +15,7 @@ use App\Http\Controllers\Manage\UserController;
 // use App\Http\Controllers\Manage\InstitutionController;
 // use App\Http\Controllers\Manage\PaymentController;
 // // Settings
-// use App\Http\Controllers\Settings\PaymentMethodController;
-// use App\Http\Controllers\Settings\ProfileController;
-// // Payments
-// use App\Http\Controllers\Payments\MpesaController;
+use App\Http\Controllers\Settings\ProfileController;
 
 
 Route::get('/user', function (Request $request) {
@@ -49,12 +45,11 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 | DashboardController
 |--------------------------------------------------------------------------
 */
-Route::group(['middleware' => ['auth:sanctum']], function() {
+// Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('dashboard', [DashboardController::class, 'index']);
     Route::get('dashboard2', [DashboardController::class, 'index2']);
-    Route::get('filter-interests/{id}', [DashboardController::class, 'filterInterests']);
     Route::get('search-suggestions', [DashboardController::class, 'searchSuggestions']);
-});
+// });
 
 /*
 |--------------------------------------------------------------------------
@@ -70,53 +65,60 @@ Route::get('home/search-course-modules/{term}', [HomeController::class, 'search'
 | UserController
 |--------------------------------------------------------------------------
 */
-// Route::group(['middleware' => ['auth:sanctum']], function() {
+Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::resource('users', UserController::class);
     Route::post('search-users', [UserController::class, 'searchItems']);
     Route::get('unpaginated-items-users', [UserController::class, 'unpaginatedItems']);
-// });
+});
 
 /*
 |--------------------------------------------------------------------------
 | MediaCategoryController
 |--------------------------------------------------------------------------
 */
-// Route::group(['middleware' => ['auth:sanctum']], function() {
+Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::resource('media-categories', MediaCategoryController::class);
     Route::post('search-media-categories', [MediaCategoryController::class, 'searchItems']);
     Route::get('unpaginated-items-media-categories', [MediaCategoryController::class, 'unpaginatedItems']);
-// });
-
+});
 
 /*
 |--------------------------------------------------------------------------
 | MediaTagController
 |--------------------------------------------------------------------------
 */
-// Route::group(['middleware' => ['auth:sanctum']], function() {
+Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::resource('media-tags', MediaTagController::class);
     Route::post('search-media-tags', [MediaTagController::class, 'searchItems']);
     Route::get('unpaginated-items-media-tags', [MediaTagController::class, 'unpaginatedItems']);
-// });
+});
 
+/*
+|--------------------------------------------------------------------------
+| MediaController
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('media', MediaController::class);
+    Route::post('search-media', [MediaController::class, 'searchItems']);
+    Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);
 
-// Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/upload/init', [UploadController::class, 'init']);
-    Route::post('/upload/chunk', [UploadController::class, 'chunk']);
-    Route::post('/upload/complete', [UploadController::class, 'complete']);
-// });
+    Route::post('/upload/init', [MediaController::class, 'init']);
+    Route::post('/upload/chunk', [MediaController::class, 'chunk']);
+    Route::post('/upload/complete', [MediaController::class, 'complete']);
+});
 
-// Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/home', [HomeController::class, 'index']);
-    Route::get('/home/{id}', [HomeController::class, 'show']);
-// });
-
-// routes/web.php
-// Route::get('/stream/{id}/original', [MediaController::class, 'streamOriginal']);
-// Route::get('/media/stream/{id}/{file}', [MediaController::class, 'streamHLS']);
-
-Route::get('/videos/{videoId}/master.m3u8', [MediaController::class, 'streamMaster']);
-Route::get('/videos/{videoId}/{resolution}/{file}', [MediaController::class, 'streamVariant']);
-
-
+/*
+|--------------------------------------------------------------------------
+| ProfileController
+|--------------------------------------------------------------------------
+*/
+Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::resource('profiles', ProfileController::class);
+    Route::get('unpaginated-items-profiles', [ProfileController::class, 'unpaginatedItems']);
+    Route::get('filter-subjects-profiles/{class_level_id}', [ProfileController::class, 'filterSubjects']);
+    Route::post('update-notification-profiles', [ProfileController::class, 'updateNotifications']);
+    Route::get('filter-constituencies/{county_id}', [ProfileController::class, 'filterConstituencies']);
+    Route::get('filter-wards/{constituency_id}/{class_level_id}', [ProfileController::class, 'filterWards']);
+});
 
