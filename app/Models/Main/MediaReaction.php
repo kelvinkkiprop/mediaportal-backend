@@ -33,9 +33,9 @@ class MediaReaction extends Model
     }
 
     /**
-     * courseModule
+     * media
      */
-    public function courseModule(){
+    public function media(){
         return $this->belongsTo(Media::class, 'id', 'media_id');
     }
 

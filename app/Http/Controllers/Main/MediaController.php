@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 // Add
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use App\Models\Main\Media;
-use App\Jobs\TranscodeMedia;
 use Illuminate\Support\Str;
+use App\Jobs\TranscodeMedia;
+use App\Models\Main\Media;
+use App\Models\Main\MediaReaction;
+
 
 class MediaController extends Controller
 {
@@ -48,28 +50,12 @@ class MediaController extends Controller
      */
     public function show(string $id)
     {
-        return Media::find($id);
-    }
-
-
-    /**
-     * myMedia
-     */
-    public function myMedia(string $id)
-    {
-        $user_id = $id;
-        $my_playlists = Media::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
-        $my_media = Media::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
-
-        $response =[
-            'status' => 'success',
-            'message' => 'Data retrieved successfully',
-            'data' => [
-                'my_playlists' => $my_playlists,
-                'my_media' => $my_media,
-            ]
-        ];
-        return response($response, 201);
+        // return Media::find($id);
+        $item = Media::with(['user', 'likes', 'dislikes'])->find($id);
+        // $item = Media::find($id);
+        $item->increment('views');
+        // return $item->refresh();
+        return $item->refresh()->load(['user']);
     }
 
     /**
@@ -134,6 +120,78 @@ class MediaController extends Controller
 
 
 
+
+
+
+    /**
+     * myMedia
+     */
+    public function myMedia(string $id)
+    {
+        $user_id = $id;
+        $my_playlists = Media::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        $my_media = Media::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+
+        $response =[
+            'status' => 'success',
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'my_playlists' => $my_playlists,
+                'my_media' => $my_media,
+            ]
+        ];
+        return response($response, 201);
+    }
+
+    /**
+     * react
+     */
+    public function react(Request $request, string $id)
+    {
+        $fields = $request->validate([
+            'type_id' => 'required|in:1,2'
+        ]);
+
+        $reactionType = $fields['type_id'];
+        $mCurrentUser = auth()->user();
+        $reaction = MediaReaction::where('media_id', $id)->where('user_id', $mCurrentUser->id)->first();
+        if ($reaction) {
+            if ($reaction->type_id === $reactionType) {
+                // Same_reaction_remove
+                $reaction->delete();
+                $status = 'removed';
+            } else {
+                // Different_reaction_update
+                $reaction->update([
+                    'type_id' => $reactionType
+                ]);
+                $status = 'updated';
+            }
+        } else {
+            // No_reaction_yet_create_one
+            $reaction = MediaReaction::create([
+                'media_id' => $id,
+                'user_id' => $mCurrentUser->id,
+                'type_id' => $reactionType,
+            ]);
+            $status = 'created';
+        }
+        // // Retain_views_due_to_refresh
+        $item = Media::find($id);
+        $item->views = $item->views-1;
+        $item->save();
+
+        $items = [
+            'likes' => $item->likes()->count(),
+            'dislikes' => $item->dislikes()->count(),
+        ];
+        $response = [
+            'status' => 'success',
+            'message' => "Reaction {$status} successfully",
+            'data' => $items
+        ];
+        return response($response, 201);
+    }
 
 
 

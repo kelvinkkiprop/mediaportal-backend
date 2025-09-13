@@ -5,6 +5,8 @@ namespace App\Models\Main;
 use Illuminate\Database\Eloquent\Model;
 // Add
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\Main\MediaReaction;
 
 class Media extends Model
 {
@@ -68,10 +70,10 @@ class Media extends Model
         'file',
 
         'readable_date',
-        // 'is_liked',
-        // 'is_disliked',
-        // 'likes_count',
-        // 'dislikes_count',
+        'is_liked',
+        'is_disliked',
+        'likes_count',
+        'dislikes_count',
         'total_views',
     ];
 
@@ -139,30 +141,63 @@ class Media extends Model
         }
     }
 
-    // public function getIsLikedAttribute()
-    // {
-    //     $mCurrentUser = auth()->user();
-    //     if (!$mCurrentUser) {
-    //         return 0; // false
-    //     }
-    //     return $this->reactions()->where('user_id', $mCurrentUser->id)->where('type_id', 1)->exists();
-    // }
+    public function getIsLikedAttribute()
+    {
+        $mCurrentUser = auth()->user();
+        if (!$mCurrentUser) {
+            return 0; // false
+        }
+        return $this->reactions()->where('user_id', $mCurrentUser->id)->where('type_id', 1)->exists();
+    }
 
-    // public function getIsDislikedAttribute()
-    // {
-    //     $mCurrentUser = auth()->user();
-    //     if (!$mCurrentUser) {
-    //         return 0; // false
-    //     }
-    //     return $this->reactions()->where('user_id', $mCurrentUser->id)->where('type_id', 2)->exists();
-    // }
-    // public function getLikesCountAttribute()
-    // {
-    //     return $this->reactions()->where('type_id', 1)->count();
-    // }
-    // public function getDislikesCountAttribute()
-    // {
-    //     return $this->reactions()->where('type_id', 2)->count();
-    // }
+    public function getIsDislikedAttribute()
+    {
+        $mCurrentUser = auth()->user();
+        if (!$mCurrentUser) {
+            return 0; // false
+        }
+        return $this->reactions()->where('user_id', $mCurrentUser->id)->where('type_id', 2)->exists();
+    }
+    public function getLikesCountAttribute()
+    {
+        return $this->reactions()->where('type_id', 1)->count();
+    }
+    public function getDislikesCountAttribute()
+    {
+        return $this->reactions()->where('type_id', 2)->count();
+    }
+
+
+    /**
+     * user
+     */
+    public function user()
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    /**
+     * reactions
+     */
+    public function reactions()
+    {
+        return $this->hasMany(MediaReaction::class);
+    }
+
+    /**
+     * likes
+     */
+    public function likes()
+    {
+        return $this->reactions()->where('type_id', 1);
+    }
+
+    /**
+     * dislikes
+     */
+    public function dislikes()
+    {
+        return $this->reactions()->where('type_id', 2);
+    }
 
 }
