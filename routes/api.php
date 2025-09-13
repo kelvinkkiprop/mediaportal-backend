@@ -103,6 +103,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('search-media', [MediaController::class, 'searchItems']);
     Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);
 
+    Route::get('my-media/{id}', [MediaController::class, 'myMedia']);
+
     Route::post('/upload/init', [MediaController::class, 'init']);
     Route::post('/upload/chunk', [MediaController::class, 'chunk']);
     Route::post('/upload/complete', [MediaController::class, 'complete']);
