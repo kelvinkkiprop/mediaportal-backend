@@ -48,7 +48,19 @@ class MediaController extends Controller
      */
     public function show(string $id)
     {
-        return Media::find($id);
+        // return Media::find($id);
+        $my_playlists = Media::where('user_id', $id)->orderBy('created_at', 'desc')->get();
+        $my_media = Media::where('user_id', $id)->orderBy('created_at', 'desc')->get();
+
+        $response =[
+            'status' => 'success',
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'my_playlists' => $my_playlists,
+                'my_media' => $my_media,
+            ]
+        ];
+        return response($response, 201);
     }
 
     /**
