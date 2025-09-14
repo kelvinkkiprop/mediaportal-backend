@@ -179,13 +179,13 @@ class MediaController extends Controller
         // // Retain_views_due_to_refresh
         // $item = Media::find($id);
         $item = Media::with(['user', 'likes', 'dislikes'])->find($id);
-        $item->views = $item->views-1;
-        $item->save();
+        // $item->views = $item->views-1;
+        // $item->save();
 
-        $items = [
-            'likes' => $item->likes()->count(),
-            'dislikes' => $item->dislikes()->count(),
-        ];
+        // $items = [
+        //     'likes' => $item->likes()->count(),
+        //     'dislikes' => $item->dislikes()->count(),
+        // ];
         $response = [
             'status' => 'success',
             'message' => "Reaction {$status} successfully",
