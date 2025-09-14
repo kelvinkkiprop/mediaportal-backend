@@ -50,12 +50,12 @@ class MediaController extends Controller
      */
     public function show(string $id)
     {
-        // return Media::find($id);
-        $item = Media::with(['user', 'likes', 'dislikes'])->find($id);
-        // $item = Media::find($id);
-        $item->increment('views');
-        // return $item->refresh();
-        return $item->refresh()->load(['user']);
+        return Media::with(['user', 'likes', 'dislikes'])->find($id);
+        // $item = Media::with(['user', 'likes', 'dislikes'])->find($id);
+        // // $item = Media::find($id);
+        // $item->increment('views');
+        // // return $item->refresh();
+        // return $item->refresh()->load(['user']);
     }
 
     /**
