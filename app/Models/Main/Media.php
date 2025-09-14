@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Main\MediaReaction;
+use App\Models\Main\MediaComment;
 
 class Media extends Model
 {
@@ -75,6 +76,7 @@ class Media extends Model
         'likes_count',
         'dislikes_count',
         'total_views',
+        'total_comments',
     ];
 
 
@@ -140,6 +142,15 @@ class Media extends Model
             return $value==1 ? $value." view" : $value." views";
         }
     }
+    public function getTotalCommentsAttribute()
+    {
+        $value =  $this->comments()->count();;
+        if(is_null($value)){
+            return null;
+        }else{
+            return $value==1 ? $value." Comment" : $value." Comments";
+        }
+    }
 
     public function getIsLikedAttribute()
     {
@@ -182,6 +193,14 @@ class Media extends Model
     public function reactions()
     {
         return $this->hasMany(MediaReaction::class);
+    }
+
+    /**
+     * comments
+     */
+    public function comments()
+    {
+        return $this->hasMany(MediaComment::class, 'media_id', 'id')->orderBy('created_at', 'desc');
     }
 
     /**

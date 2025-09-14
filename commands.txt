@@ -31,6 +31,7 @@ php artisan make:model Main/MediaTag -m
 php artisan make:model Main/MediaStatus -m
 php artisan make:model Main/MediaReaction -m
 php artisan make:model Main/MediaTag -m
+php artisan make:model Main/MediaComment -m
 php artisan make:model Main/Interest -m
 php artisan make:model Main/Institution -m
 php artisan make:model Main/InterestUser -m

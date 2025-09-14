@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 use App\Jobs\TranscodeMedia;
 use App\Models\Main\Media;
 use App\Models\Main\MediaReaction;
-
+use App\Models\Main\MediaComment;
 
 class MediaController extends Controller
 {
@@ -51,11 +51,11 @@ class MediaController extends Controller
     public function show(string $id)
     {
         // return Media::find($id);
-        $item = Media::with(['user', 'likes', 'dislikes'])->find($id);
+        $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user'])->find($id);
         // $item = Media::find($id);
         $item->increment('views');
         // return $item->refresh();
-        return $item->refresh()->load(['user', 'likes', 'dislikes']);
+        return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user']);
     }
 
     /**
@@ -189,6 +189,30 @@ class MediaController extends Controller
         $response = [
             'status' => 'success',
             'message' => "Reaction {$status} successfully",
+            'data' => $item
+        ];
+        return response($response, 201);
+    }
+
+    // comment
+    public function comment(Request $request, $id)
+    {
+        $fields = $request->validate([
+            'text' => 'required|string|max:500',
+        ]);
+
+        $mCurrentUser = auth()->user();
+        $item = MediaComment::create([
+            'user_id' => $mCurrentUser->id,
+            'media_id' => $id,
+            'parent_id' => $id,
+            'text' => $fields['text']
+        ]);
+
+        $item = Media::with(['comments','comments.user','user', 'likes', 'dislikes'])->find($id);
+        $response =[
+            'status' => 'success',
+            'message' => 'Comment added successfully',
             'data' => $item
         ];
         return response($response, 201);
