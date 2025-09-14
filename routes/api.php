@@ -98,7 +98,9 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 | MediaController
 |--------------------------------------------------------------------------
 */
+Route::get('media/{media}', [MediaController::class, 'show'])->name('media.show');
 Route::middleware('auth:sanctum')->group(function () {
+    // Route::resource('media', MediaController::class)->except(['show']);
     Route::resource('media', MediaController::class);
     Route::post('search-media', [MediaController::class, 'searchItems']);
     Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);

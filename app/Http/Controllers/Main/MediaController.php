@@ -59,20 +59,22 @@ class MediaController extends Controller
         // return $item->refresh();
             // update
             $mCurrentUser = auth()->user();
-            $latestHistory = MediaHistory::where('media_id', $id)->where('user_id', $mCurrentUser->id)->latest()->first();
-            if (!$latestHistory) {
-                // no_previous_history
-                MediaHistory::create([
-                    'media_id' => $id,
-                    'user_id'  => $mCurrentUser->id,
-                ]);
-            } else {
-                // time_threshold_create_if_older_than_1_min i.e. lt(less_than)
-                if ($latestHistory->created_at->lt(now()->subMinutes(1))) {
+            if ($mCurrentUser) {
+                $latestHistory = MediaHistory::where('media_id', $id)->where('user_id', $mCurrentUser->id)->latest()->first();
+                if (!$latestHistory && $mCurrentUser) {
+                    // no_previous_history
                     MediaHistory::create([
                         'media_id' => $id,
                         'user_id'  => $mCurrentUser->id,
                     ]);
+                } else {
+                    // time_threshold_create_if_older_than_1_min i.e. lt(less_than)
+                    if ($latestHistory->created_at->lt(now()->subMinutes(1))) {
+                        MediaHistory::create([
+                            'media_id' => $id,
+                            'user_id'  => $mCurrentUser->id,
+                        ]);
+                    }
                 }
             }
         return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user']);
