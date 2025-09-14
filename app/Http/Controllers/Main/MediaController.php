@@ -261,7 +261,7 @@ class MediaController extends Controller
         $item = MediaComment::create([
             'user_id' => $mCurrentUser->id,
             'media_id' => $id,
-            'parent_id' => $id,
+            // 'parent_id' => $id,
             'text' => $fields['text']
         ]);
 
