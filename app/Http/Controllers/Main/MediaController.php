@@ -177,7 +177,8 @@ class MediaController extends Controller
             $status = 'created';
         }
         // // Retain_views_due_to_refresh
-        $item = Media::find($id);
+        // $item = Media::find($id);
+        $item = Media::with(['user', 'likes', 'dislikes'])->find($id);
         $item->views = $item->views-1;
         $item->save();
 
@@ -188,7 +189,7 @@ class MediaController extends Controller
         $response = [
             'status' => 'success',
             'message' => "Reaction {$status} successfully",
-            'data' => $items
+            'data' => $item
         ];
         return response($response, 201);
     }
