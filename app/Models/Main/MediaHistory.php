@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Main\Media;
 
-class MediaReaction extends Model
+class MediaHistory extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -18,7 +18,6 @@ class MediaReaction extends Model
         'id',
         'media_id',
         'user_id',
-        'type_id',
 
         'created_at',
         'updated_at'

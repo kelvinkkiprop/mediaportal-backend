@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 // Add
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Jobs\TranscodeMedia;
 use App\Models\Main\Media;
 use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
+use App\Models\Main\MediaHistory;
 
 class MediaController extends Controller
 {
@@ -55,6 +57,24 @@ class MediaController extends Controller
         // $item = Media::find($id);
         $item->increment('views');
         // return $item->refresh();
+            // update
+            $mCurrentUser = auth()->user();
+            $latestHistory = MediaHistory::where('media_id', $id)->where('user_id', $mCurrentUser->id)->latest()->first();
+            if (!$latestHistory) {
+                // no_previous_history
+                MediaHistory::create([
+                    'media_id' => $id,
+                    'user_id'  => $mCurrentUser->id,
+                ]);
+            } else {
+                // time_threshold_create_if_older_than_1_min i.e. lt(less_than)
+                if ($latestHistory->created_at->lt(now()->subMinutes(1))) {
+                    MediaHistory::create([
+                        'media_id' => $id,
+                        'user_id'  => $mCurrentUser->id,
+                    ]);
+                }
+            }
         return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user']);
     }
 
@@ -84,6 +104,22 @@ class MediaController extends Controller
     public function destroy(string $id)
     {
         $item = Media::find($id);
+        //    // Delete
+        //     $path_downloads = config('app.paths.file_download');
+        //     $file_url = public_path($path_downloads.$item->customer_request);
+        //     if(File::exists($file_url)){
+        //         File::delete($file_url);
+        //     }
+            $originalsPublicPath = storage_path("app/public/videos/originals/{$item->id}.mp4");
+            $processedPublicPath = storage_path("app/public/videos/processed/{$item->id}");
+            // Delete_public_file_if_exists
+            if (file_exists($originalsPublicPath)) {
+                unlink($originalsPublicPath);
+            }
+            // Delete_directory_if_it_exists
+            if (File::exists($processedPublicPath)) {
+                File::deleteDirectory($processedPublicPath);
+            }
         $item->delete();
 
         $response =[
@@ -194,7 +230,25 @@ class MediaController extends Controller
         return response($response, 201);
     }
 
-    // comment
+    /**
+     * likedMedia
+     */
+    public function likedMedia()
+    {
+        return MediaReaction::with(['media','media.user'])->where('type_id',1)->orderBy('created_at', 'desc')->paginate(10);
+    }
+
+    /**
+     * historyMedia
+     */
+    public function historyMedia()
+    {
+        return MediaHistory::with(['media','media.user'])->orderBy('created_at', 'desc')->paginate(10);
+    }
+
+    /**
+    * comment
+    */
     public function comment(Request $request, $id)
     {
         $fields = $request->validate([
@@ -459,4 +513,5 @@ class MediaController extends Controller
             ]
         ]);
     }
+
 }

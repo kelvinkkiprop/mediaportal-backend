@@ -11,16 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media_reactions', function (Blueprint $table) {
+        Schema::create('media_histories', function (Blueprint $table) {
             $table->id();
-            // $table->uuid('media_id')->nullable();
-            // $table->uuid('user_id')->nullable();
             $table->foreignUuid('media_id')->constrained('media')->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->unsignedBigInteger('type_id')->default(1); //(dis)like
             $table->timestamps();
-
-            $table->unique(['media_id', 'user_id']);
         });
     }
 
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media_reactions');
+        Schema::dropIfExists('media_histories');
     }
 };
