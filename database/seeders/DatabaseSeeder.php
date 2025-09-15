@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
             WardSeeder::class,
             MediaCategorySeeder::class,
             MediaTagSeeder::class,
+            OrganizationCategorySeeder::class,
+            OrganizationSeeder::class
         ]);
 
 

@@ -37,15 +37,11 @@ php artisan make:model Main/Institution -m
 php artisan make:model Main/InterestUser -m
 php artisan make:model Main/SpecialityUser -m
 php artisan make:model Main/Payment -m
-php artisan make:model Settings/InstructorType -m
 php artisan make:model Settings/Role -m
 php artisan make:model Settings/UserStatus -m
-php artisan make:model Settings/ClassLevel -m
-php artisan make:model Settings/Subject -m
-php artisan make:model Settings/AccessType -m
-php artisan make:model Settings/VideoStatus -m
-php artisan make:model Settings/PaymentMethod -m
 php artisan make:model Settings/PaymentStatus -m
+php artisan make:model Settings/OrganizationCategory -m
+php artisan make:model Settings/Organization -m
 php artisan make:model Other/County -m
 php artisan make:model Other/Constituency -m
 php artisan make:model Other/Ward -m
@@ -78,6 +74,7 @@ VideoCipherService.php
 
 9. Commands
 php artisan make:command GetVideoStatus
+composer install --optimize-autoloader --no-dev
 
 10. Helpers
 php artisan make:helper Helpers/MyHelper
@@ -373,3 +370,7 @@ private function getFFmpegPath(): string
 }
 ===============================================./FFMPEG===============================================
 
+
+
+
+ composer require dreamersdesire/laravel-live-streaming:dev-main

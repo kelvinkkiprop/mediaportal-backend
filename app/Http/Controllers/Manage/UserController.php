@@ -10,6 +10,8 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Settings\Role;
 use App\Models\Settings\UserStatus;
+use App\Models\Settings\OrganizationCategory;
+use App\Models\Settings\Organization;
 // Notifications
 use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
@@ -35,7 +37,10 @@ class UserController extends Controller
             'last_name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'role_id' => 'required|integer',
-            'password' => 'required|string'
+            'password' => 'required|string',
+
+            'organization_category_id' => 'required|integer',
+            'organization_id' => 'required|integer',
         ]);
 
         $mCurrentUser = auth()->user();
@@ -51,6 +56,10 @@ class UserController extends Controller
             'created_at'=>date('Y-m-d H:i:s'),
             // "email_verified_at"=>date("Y-m-d H:i:s"),
             // 'status_id' => 2,
+
+            'organization_category_id' => $fields['organization_category_id'],
+            'organization_id' => $fields['organization_id'],
+            'account_type_id' => 2,
         ]);
 
          //Email
@@ -203,8 +212,9 @@ class UserController extends Controller
      */
     public function unpaginatedItems()
     {
-        $roles = Role::orderBy('name', 'asc')->get();
+        $roles = Role::orderBy('id', 'asc')->get();
         $statuses = UserStatus::orderBy('name', 'asc')->get();
+        $organization_categories = OrganizationCategory::orderBy('name', 'asc')->get();
 
         $response =[
             'status' => 'success',
@@ -212,9 +222,19 @@ class UserController extends Controller
             'data' => [
                 'roles' => $roles,
                 'statuses' => $statuses,
+                'organization_categories' => $organization_categories,
             ]
         ];
         return response($response, 201);
+    }
+
+
+    /**
+     * filterOrganizations
+     */
+    public function filterOrganizations($category_id)
+    {
+        return Organization::where('category_id', $category_id)->orderBy('name', 'asc')->get();
     }
 
 

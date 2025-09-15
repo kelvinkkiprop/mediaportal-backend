@@ -69,6 +69,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::resource('users', UserController::class);
     Route::post('search-users', [UserController::class, 'searchItems']);
     Route::get('unpaginated-items-users', [UserController::class, 'unpaginatedItems']);
+
+    Route::get('filter-organizations/{category_id}', [UserController::class, 'filterOrganizations']);
 });
 
 /*

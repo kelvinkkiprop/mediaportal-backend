@@ -73,7 +73,11 @@ class User extends Authenticatable
         'receive_notifications',
 
         'referral_code',
-        'referred_by_id'
+        'referred_by_id',
+
+        'organization_category_id',
+        'organization_id',
+        'account_type_id',
     ];
 
     /**

@@ -37,6 +37,10 @@ return new class extends Migration
 
             $table->string('referral_code')->unique()->nullable();
             $table->foreignId('referred_by_id')->nullable();
+
+            $table->unsignedBigInteger('organization_category_id')->nullable();
+            $table->unsignedBigInteger('organization_id')->nullable();
+            $table->unsignedBigInteger('account_type_id')->default(1);//private/work
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -18,10 +18,11 @@ class UserSeeder extends Seeder
     {
         // Default
         $items = [
-            ['id'=>Str::uuid(),'first_name'=>'System','last_name'=>'Admin','username'=>'systemadmin','email'=>'admin@ict.go.ke','phone'=>'0794267685',
-            'password'=>Hash::make('ICT@123'),'role_id'=>1,'status_id'=>2,'email_verified_at'=>now(),'remember_token'=>Str::random(50),'created_at'=>now()],
-            ['id'=>Str::uuid(),'first_name'=>'Content','last_name'=>'Creator','username'=>'contentcreator','email'=>'creator@ict.go.ke','phone'=> null,
-            'password'=>Hash::make('ICT@123'),'role_id'=>2,'status_id'=>2,'email_verified_at'=>now(),'remember_token'=>Str::random(50),'created_at'=>now()],
+            ['id'=>Str::uuid(),'first_name'=>'System','last_name'=>'Admin','username'=>'systemadmin','email'=>'admin@ict.go.ke','password'=>Hash::make('ICT@123'),'role_id'=>1,'status_id'=>2,'email_verified_at'=>now(),'created_at'=>now()],
+            ['id'=>Str::uuid(),'first_name'=>'Super','last_name'=>'Admin','username'=>'superadmin','email'=>'superadmin@ict.go.ke','password'=>Hash::make('ICT@123'),'role_id'=>1,'status_id'=>2,'email_verified_at'=>now(),'created_at'=>now()],
+            ['id'=>Str::uuid(),'first_name'=>'PCO','last_name'=>'1','username'=>'PCO1','email'=>'VIP1@ict.go.ke','password'=>Hash::make('ICT@123'),'role_id'=>3,'status_id'=>2,'email_verified_at'=>now(),'created_at'=>now()],
+            ['id'=>Str::uuid(),'first_name'=>'VIP','last_name'=>'1','username'=>'VIP1','email'=>'PCO1@ict.go.ke','password'=>Hash::make('ICT@123'),'role_id'=>4,'status_id'=>2,'email_verified_at'=>now(),'created_at'=>now()],
+            ['id'=>Str::uuid(),'first_name'=>'Citizen','last_name'=>'1','username'=>'citizen1','email'=>'citizen@ict.go.ke','password'=>Hash::make('ICT@123'),'role_id'=>5,'status_id'=>2,'email_verified_at'=>now(),'created_at'=>now()],
         ];
 
         User::insert($items);

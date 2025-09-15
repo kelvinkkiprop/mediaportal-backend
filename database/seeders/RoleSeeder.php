@@ -16,8 +16,11 @@ class RoleSeeder extends Seeder
     {
         // Default
         $items = [
-            ['id'=>1, 'name'=>'Admin','created_at'=>now()],
-            ['id'=>2, 'name'=>'Creator','created_at'=>now()],
+            ['id'=>1, 'name'=>'Super Admin','created_at'=>now()],
+            ['id'=>2, 'name'=>'Admin','created_at'=>now()],
+            ['id'=>3, 'name'=>'PCO/PIO','created_at'=>now()],
+            ['id'=>4, 'name'=>'VIP','created_at'=>now()],
+            ['id'=>5, 'name'=>'Citizen','created_at'=>now()],
         ];
         Role::insert($items);
     }
