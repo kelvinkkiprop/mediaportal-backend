@@ -61,12 +61,23 @@ class TranscodeMedia implements ShouldQueue
         // Create output directory with proper permissions
         $outputDir = $this->createOutputDirectory();
         // Define renditions
+        // $renditions = [
+        //     ['name' => '360p', 'scale' => '640:360', 'bitrate' => '800k', 'maxrate' => '856k'],
+        //     ['name' => '480p', 'scale' => '854:480', 'bitrate' => '1400k', 'maxrate' => '1498k'],
+        //     ['name' => '720p', 'scale' => '1280:720', 'bitrate' => '2800k', 'maxrate' => '2996k'],
+        //     ['name' => '1080p', 'scale' => '1920:1080', 'bitrate' => '5000k', 'maxrate' => '5350k'],
+        // ];
         $renditions = [
-            ['name' => '360p', 'scale' => '640:360', 'bitrate' => '800k', 'maxrate' => '856k'],
-            ['name' => '480p', 'scale' => '854:480', 'bitrate' => '1400k', 'maxrate' => '1498k'],
-            ['name' => '720p', 'scale' => '1280:720', 'bitrate' => '2800k', 'maxrate' => '2996k'],
-            ['name' => '1080p', 'scale' => '1920:1080', 'bitrate' => '5000k', 'maxrate' => '5350k'],
+            ['name' => '144p',  'scale' => '256:144',  'bitrate' => '200k',  'maxrate' => '214k'],
+            ['name' => '240p',  'scale' => '426:240',  'bitrate' => '400k',  'maxrate' => '428k'],
+            ['name' => '360p',  'scale' => '640:360',  'bitrate' => '800k',  'maxrate' => '856k'],
+            ['name' => '480p',  'scale' => '854:480',  'bitrate' => '1400k', 'maxrate' => '1498k'],
+            ['name' => '720p',  'scale' => '1280:720', 'bitrate' => '2800k', 'maxrate' => '2996k'],
+            ['name' => '1080p', 'scale' => '1920:1080','bitrate' => '5000k', 'maxrate' => '5350k'],
+            ['name' => '1440p', 'scale' => '2560:1440','bitrate' => '8000k', 'maxrate' => '8560k'],
+            ['name' => '2160p', 'scale' => '3840:2160','bitrate' => '14000k','maxrate' => '15000k'],
         ];
+
 
         $masterPlaylist = "#EXTM3U\n#EXT-X-VERSION:3\n";
         $successfulRenditions = [];

@@ -52,6 +52,9 @@ class Media extends Model
 
         'type_id',
         'category_id',
+        'visibility_id',
+        'is_recordable',
+        'is_streamable',
         'allow_comments',
         'allow_download',
 
@@ -59,6 +62,12 @@ class Media extends Model
         'updated_by',
         'approved_by',
         'approved_on',
+
+        'live_stream_key_hash',
+        'live_stream_status_id',
+        'scheduled_at',
+        'started_at',
+        'ended_at'
     ];
 
     /**

@@ -26,8 +26,11 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id')->default(1);
             $table->unsignedBigInteger('views')->default(0);
 
-            $table->unsignedBigInteger('type_id')->default(1); //Public/Private
+            $table->unsignedBigInteger('type_id')->default(1);// upload|Live|vod
             $table->unsignedBigInteger('category_id')->default(1);
+            $table->unsignedBigInteger('visibility_id')->default(1); // Public|unlisted|private
+            $table->boolean('is_recordable')->default(true);
+            $table->boolean('is_streamable')->default(true);
             $table->boolean('allow_comments')->default(true);
             $table->boolean('allow_download')->default(true);
 
@@ -35,6 +38,12 @@ return new class extends Migration
             $table->uuid('updated_by')->nullable();
             $table->uuid('approved_by')->nullable();
             $table->dateTime('approved_on')->nullable();
+
+            $table->string('live_stream_key_hash')->nullable()->comment('hashed stream key');
+            $table->unsignedBigInteger('live_stream_status_id')->default(1); // scheduled|starting|live|ended|failed
+            $table->timestamp('scheduled_at')->nullable();
+            $table->timestamp('started_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
 
             $table->timestamps();
         });
