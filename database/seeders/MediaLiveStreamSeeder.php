@@ -35,7 +35,7 @@ class MediaLiveStreamSeeder extends Seeder
         $users = User::all();
         $items = [
             ['id'=>$uuid, 'user_id'=>$users[0]->id, 'title'=>'Test Live Stream', 'description'=>'<p>Test description</p>', 'scheduled_at'=>now(), 'type_id'=>2,
-            'live_stream_key_hash'=>'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8', 'created_at'=>now()],
+            'live_stream_link'=>'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8', 'created_at'=>now()],
         ];
         Media::insert($items);
     }

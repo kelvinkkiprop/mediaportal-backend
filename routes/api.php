@@ -9,6 +9,7 @@ use App\Http\Controllers\Main\DashboardController;
 use App\Http\Controllers\Main\MediaController;
 use App\Http\Controllers\Main\MediaCategoryController;
 use App\Http\Controllers\Main\MediaTagController;
+use App\Http\Controllers\Main\LiveStreamController;
 // Manage
 use App\Http\Controllers\Manage\UserController;
 // use App\Http\Controllers\Manage\InterestController;
@@ -16,7 +17,6 @@ use App\Http\Controllers\Manage\UserController;
 // use App\Http\Controllers\Manage\PaymentController;
 // // Settings
 use App\Http\Controllers\Settings\ProfileController;
-
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -116,6 +116,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/upload/init', [MediaController::class, 'init']);
     Route::post('/upload/chunk', [MediaController::class, 'chunk']);
     Route::post('/upload/complete', [MediaController::class, 'complete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| LiveStreamController
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('live-stream', LiveStreamController::class);
+    Route::post('search-live-stream', [LiveStreamController::class, 'searchItems']);
+    Route::get('unpaginated-items-live-stream', [LiveStreamController::class, 'unpaginatedItems']);
 });
 
 /*

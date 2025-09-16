@@ -27,11 +27,13 @@ class DatabaseSeeder extends Seeder
             CountySeeder::class,
             ConstituencySeeder::class,
             WardSeeder::class,
+            OrganizationCategorySeeder::class,
+            OrganizationSeeder::class,
             MediaCategorySeeder::class,
             MediaTagSeeder::class,
             MediaLiveStreamSeeder::class,
-            OrganizationCategorySeeder::class,
-            OrganizationSeeder::class
+            MediaStatusSeeder::class,
+            LiveStreamStatusSeeder::class,
         ]);
 
 

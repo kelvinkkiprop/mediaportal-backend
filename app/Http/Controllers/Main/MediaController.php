@@ -22,7 +22,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        return Media::orderBy('created_at', 'desc')->paginate(10);
+        return Media::with('status')->orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**

@@ -20,6 +20,7 @@ php artisan make:controller Main/DashboardController
 php artisan make:controller Main/AuthController
 php artisan make:controller Main/UserController --api --resource
 php artisan make:controller Main/MediacategoryController --api --resource
+php artisan make:controller Main/LiveStreamController --api --resource
 php artisan make:controller Main/HomeController
 php artisan make:controller Settings/InterestController --api --resource
 php artisan make:controller Settings/PaymentMethodController --api --resource
@@ -29,6 +30,7 @@ php artisan make:model Main/Media -m
 php artisan make:model Main/MediaCategory -m
 php artisan make:model Main/MediaTag -m
 php artisan make:model Main/MediaStatus -m
+php artisan make:model Main/LiveStreamStatus -m
 php artisan make:model Main/MediaReaction -m
 php artisan make:model Main/MediaTag -m
 php artisan make:model Main/MediaComment -m
@@ -75,6 +77,9 @@ VideoCipherService.php
 9. Commands
 php artisan make:command GetVideoStatus
 composer install --optimize-autoloader --no-dev
+
+php artisan optimize:clear
+
 
 10. Helpers
 php artisan make:helper Helpers/MyHelper

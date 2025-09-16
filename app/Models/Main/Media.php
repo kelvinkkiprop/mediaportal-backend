@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
+use App\Models\Main\MediaStatus;
 
 class Media extends Model
 {
@@ -63,7 +64,7 @@ class Media extends Model
         'approved_by',
         'approved_on',
 
-        'live_stream_key_hash',
+        'live_stream_link',
         'live_stream_status_id',
         'scheduled_at',
         'started_at',
@@ -226,6 +227,21 @@ class Media extends Model
     public function dislikes()
     {
         return $this->reactions()->where('type_id', 2);
+    }
+
+
+    /**
+     * mediaStatus
+     */
+    public function mediaStatus(){
+        return $this->hasOne(MediaStatus::class, 'id', 'media_status_id');
+    }
+
+    /**
+     * liveStreamStatus
+     */
+    public function liveStreamStatus(){
+        return $this->hasOne(LiveStreamStatus::class, 'id', 'live_stream_status_id');
     }
 
 }
