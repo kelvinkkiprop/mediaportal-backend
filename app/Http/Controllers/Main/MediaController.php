@@ -145,7 +145,6 @@ class MediaController extends Controller
             MediaCategory::insert($insertData); //BulkInsert
         }
 
-
         return response([
             'status' => 'success',
             'message' => 'Media updated successfully',

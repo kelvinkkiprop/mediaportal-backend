@@ -39,22 +39,12 @@ class MediaCategory extends Model
     }
 
 
-
     /**
      * category
      */
     public function category()
     {
         return $this->belongsTo(ContentCategory::class);
-    }
-
-
-    /**
-     * related
-     */
-    public function related()
-    {
-        return $this->belongsTo(Media::class);
     }
 
 }
