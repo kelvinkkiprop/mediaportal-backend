@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Enums\TagEnum;
 // Add
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
@@ -14,6 +15,10 @@ use App\Models\Main\Media;
 use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
 use App\Models\Main\MediaHistory;
+use App\Models\Main\ContentCategory;
+use App\Models\Main\MediaCategory;
+use App\Models\Main\MediaType;
+use App\Models\Settings\Organization;
 
 class MediaController extends Controller
 {
@@ -53,8 +58,8 @@ class MediaController extends Controller
     public function show(string $id)
     {
         // return Media::find($id);
-        $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user'])->find($id);
-        // $item = Media::find($id);
+        // $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user'])->find($id);
+        $item = Media::find($id);
         $item->increment('views');
         // return $item->refresh();
             // update
@@ -77,7 +82,24 @@ class MediaController extends Controller
                     }
                 }
             }
-        return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user']);
+        return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user','categories']);
+
+        // $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user','categories'])->find($id);
+
+        // // category_IDs
+        // $categoryIDs = MediaCategory::where('media_id', $id)->pluck('category_id');
+        // // media_IDs_in_those_categories
+        // $relatedMediaIDs = MediaCategory::whereIn('category_id', $categoryIDs)->where('media_id', '!=', $id)->pluck('media_id');
+        // // Fetch_records
+        // $related = Media::whereIn('id', $relatedMediaIDs)->get();
+
+
+        // $data = [
+        //     'item' => $item,
+        //     'related' => $related
+        // ];
+        // return $data;
+
     }
 
     /**
@@ -86,12 +108,43 @@ class MediaController extends Controller
     public function update(Request $request, string $id)
     {
        $fields = $request->validate([
-            'name' => 'required|string',
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'type_id' => 'required|integer',
+            'category_id' => 'required|array',
+            'date_produced' => 'required|date',
+            'tags' => 'required|string',
+            'organization_id' => 'required|string',
+            'allow_comments' => 'required|boolean',
         ]);
 
+        $mCurrentUser = auth()->user();
         $item = Media::where('id', $id)->update([
-            'name' => $fields['name'],
+            'user_id' => $mCurrentUser->id,
+            'title' => $fields['title'],
+            'description' => $fields['description'],
+            'type_id' => $fields['type_id'],
+            'category_id' => $fields['category_id'],
+            'date_produced' => $fields['date_produced'],
+            'tags' => $fields['tags'],
+            'organization_id' => $fields['organization_id'],
+            'allow_comments' => $fields['allow_comments'],
         ]);
+
+        // Update_all
+        MediaCategory::where('media_id', $id)->delete();
+        $mCategories = $fields['category_id'];
+        if (!empty($mCategories)) {
+            $insertData = [];
+            foreach ($mCategories as $value) {
+                $insertData[] = [
+                    'media_id' => $id,
+                    'category_id'    => $value,
+                ];
+            }
+            MediaCategory::insert($insertData); //BulkInsert
+        }
+
 
         return response([
             'status' => 'success',
@@ -155,6 +208,28 @@ class MediaController extends Controller
         return response($response, 201);
     }
 
+    /**
+     * unpaginatedItems
+     */
+    public function unpaginatedItems()
+    {
+        $content_categories = ContentCategory::orderBy('name', 'asc')->get();
+        $organizations = Organization::orderBy('name', 'asc')->get();
+        $media_types = MediaType::orderBy('name', 'asc')->get();
+
+        $response =[
+            'status' => 'success',
+            'message' => 'Data retrieved successfully',
+            'data' => [
+                'content_categories' => $content_categories,
+                'organizations' => $organizations,
+                'media_types' => $media_types,
+            ]
+        ];
+        return response($response, 201);
+    }
+
+
 
 
 
@@ -167,15 +242,29 @@ class MediaController extends Controller
     public function myMedia(string $id)
     {
         $user_id = $id;
-        $my_playlists = Media::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
-        $my_media = Media::where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        $my_playlists = Media::with(['mediaStatus'])->where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        $my_media = Media::with(['mediaStatus'])->where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        $live_streams = Media::with(['mediaStatus'])->where('user_id', $user_id)->where('type_id',2)->orderBy('created_at', 'desc')->get();
+        $totals = Media::where('user_id', $user_id)->withCount(['likes', 'comments'])->get();
+        $total_memory = Media::where('user_id', $user_id)->sum('file_size');
+        $total_likes = $totals->sum('likes_count');
+        $total_comments = $totals->sum('comments_count');
+        $analytics = [
+            'total_views'   => Media::where('user_id', $user_id)->sum('views'),
+            'total_media'   => Media::where('user_id', $user_id)->count(),
+            'total_likes'   => $total_likes,
+            'total_comments'=> $total_comments,
+            'total_memory'  => $total_memory
+        ];
 
         $response =[
             'status' => 'success',
             'message' => 'Data retrieved successfully',
             'data' => [
                 'my_playlists' => $my_playlists,
-                'my_media' => $my_media,
+                'my_media'     => $my_media,
+                'live_streams' => $live_streams,
+                'analytics'    => $analytics,
             ]
         ];
         return response($response, 201);

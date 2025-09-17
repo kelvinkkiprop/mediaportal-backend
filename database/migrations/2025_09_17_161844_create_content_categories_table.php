@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('organizations', function (Blueprint $table) {
+        Schema::create('content_categories', function (Blueprint $table) {
             // $table->id();
             $table->uuid('id')->primary();
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('alias')->nullable();
+            $table->longText('description')->nullable();
+            $table->string('thumbnail')->nullable();
+            $table->unsignedBigInteger('type_id')->default(1); //Global/Local
             $table->unsignedBigInteger('status_id')->default(1);
             $table->timestamps();
-
-            $table->foreign('category_id')->references('id')->on('organization_categories')->onDelete('cascade');
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('organizations');
+        Schema::dropIfExists('content_categories');
     }
 };

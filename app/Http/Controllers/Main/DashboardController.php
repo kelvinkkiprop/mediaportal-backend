@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 // Add
 use App\Models\User;
 use App\Models\Main\Media;
-use App\Models\Main\CourseTag;
-use App\Models\Main\InterestUser;
-use App\Models\Main\Institution;
+use App\Models\Main\Organization;
 use App\Models\Main\Payment;
 
 class DashboardController extends Controller
@@ -24,7 +22,7 @@ class DashboardController extends Controller
             'total_users'       => User::count(),
             'total_media'       => Media::count(),
             'total_payments'    => Payment::where('status_id', 2)->sum('amount'),
-            'total_institutions'=> Institution::count(),
+            'total_institutions'=> Organization::count(),
             'recent_users'      => User::with(['role','status','interests'])->orderBy('created_at', 'desc')->get()->take(5),
             'top_media'         => Media::with(['course'])->orderBy('views', 'desc')->take(5)->get(),
         ];
@@ -74,9 +72,9 @@ class DashboardController extends Controller
         //     $myInterests = InterestUser::with('interest')->distinct()->get();
         // }
         $data = [
-            'featured_media'    => Media::orderBy('views', 'desc')->limit(5)->get(), // Top Views
-            'recommended_media' => Media::inRandomOrder()->limit(5)->get(), // Random
             'latest_media'      => Media::orderBy('created_at', 'desc')->limit(5)->get(), // Latest
+            'featured_media'    => Media::orderBy('views', 'desc')->limit(5)->get(), // Top Views
+            // 'recommended_media' => Media::inRandomOrder()->limit(5)->get(), // Random
         ];
         return response([
              'status' => 'success',

@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media_tags', function (Blueprint $table) {
-            // $table->id();
-            $table->uuid('id')->primary();
+        Schema::create('media_types', function (Blueprint $table) {
+            $table->id();
             $table->string('name')->nullable();
             $table->string('alias')->nullable();
-            $table->unsignedBigInteger('status_id')->default(1);
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media_tags');
+        Schema::dropIfExists('media_types');
     }
 };

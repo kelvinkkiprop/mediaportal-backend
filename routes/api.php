@@ -7,13 +7,13 @@ use App\Http\Controllers\Main\HomeController;
 use App\Http\Controllers\Main\AuthController;
 use App\Http\Controllers\Main\DashboardController;
 use App\Http\Controllers\Main\MediaController;
-use App\Http\Controllers\Main\MediaCategoryController;
+use App\Http\Controllers\Main\ContentCategoryController;
 use App\Http\Controllers\Main\MediaTagController;
 use App\Http\Controllers\Main\LiveStreamController;
 // Manage
 use App\Http\Controllers\Manage\UserController;
-// use App\Http\Controllers\Manage\InterestController;
-// use App\Http\Controllers\Manage\InstitutionController;
+use App\Http\Controllers\Manage\ReportController;
+// use App\Http\Controllers\Manage\OrganizationController;
 // use App\Http\Controllers\Manage\PaymentController;
 // // Settings
 use App\Http\Controllers\Settings\ProfileController;
@@ -75,13 +75,13 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
 /*
 |--------------------------------------------------------------------------
-| MediaCategoryController
+| ContentCategoryController
 |--------------------------------------------------------------------------
 */
 Route::group(['middleware' => ['auth:sanctum']], function() {
-    Route::resource('media-categories', MediaCategoryController::class);
-    Route::post('search-media-categories', [MediaCategoryController::class, 'searchItems']);
-    Route::get('unpaginated-items-media-categories', [MediaCategoryController::class, 'unpaginatedItems']);
+    Route::resource('content-categories', ContentCategoryController::class);
+    Route::post('search-content-categories', [ContentCategoryController::class, 'searchItems']);
+    Route::get('unpaginated-items-content-categories', [ContentCategoryController::class, 'unpaginatedItems']);
 });
 
 /*
@@ -143,3 +143,27 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('filter-wards/{constituency_id}/{class_level_id}', [ProfileController::class, 'filterWards']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| ProfileController
+|--------------------------------------------------------------------------
+*/
+Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::resource('profiles', ProfileController::class);
+    Route::get('unpaginated-items-profiles', [ProfileController::class, 'unpaginatedItems']);
+    Route::get('filter-subjects-profiles/{class_level_id}', [ProfileController::class, 'filterSubjects']);
+    Route::post('update-notification-profiles', [ProfileController::class, 'updateNotifications']);
+    Route::get('filter-constituencies/{county_id}', [ProfileController::class, 'filterConstituencies']);
+    Route::get('filter-wards/{constituency_id}/{class_level_id}', [ProfileController::class, 'filterWards']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| ReportController
+|--------------------------------------------------------------------------
+*/
+Route::group(['middleware' => ['auth:sanctum']], function() {
+    Route::resource('reports', ReportController::class);
+    Route::get('analytics-reports', [ReportController::class, 'analyticsItems']);
+    Route::get('insights-reports', [ReportController::class, 'insightsItems']);
+});

@@ -22,7 +22,6 @@ class OrganizationCategorySeeder extends Seeder
             ['id'=>2, 'name'=>'Ministries', 'created_at'=>now()],
             ['id'=>3, 'name'=>'State Departments', 'created_at'=>now()],
             ['id'=>4, 'name'=>'Government Agencies', 'created_at'=>now()],
-            ['id'=>5, 'name'=>'Private Companies', 'created_at'=>now()],
         ];
         OrganizationCategory::insert($items);
     }

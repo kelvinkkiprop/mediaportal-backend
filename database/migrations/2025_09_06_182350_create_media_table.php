@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('media', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id')->nullable();
+            $table->uuid('organization_id')->nullable();
             $table->string('title')->nullable();
             $table->longText('description')->nullable();
+            $table->timestamp('date_produced')->nullable();
+            $table->string('tags')->nullable();
             $table->string('src_path')->nullable();
             $table->string('hls_master')->nullable();
             $table->string('thumbnail_path')->nullable();

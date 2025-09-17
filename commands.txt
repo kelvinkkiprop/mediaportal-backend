@@ -22,8 +22,10 @@ php artisan make:controller Main/UserController --api --resource
 php artisan make:controller Main/MediacategoryController --api --resource
 php artisan make:controller Main/LiveStreamController --api --resource
 php artisan make:controller Main/HomeController
-php artisan make:controller Settings/InterestController --api --resource
-php artisan make:controller Settings/PaymentMethodController --api --resource
+php artisan make:controller Manage/OrganizationController --api --resource
+php artisan make:controller Manage/ReportController --api --resource
+php artisan make:controller Manage/PaymentMethodController --api --resource
+php artisan make:controller Settings/ProfileMethodController --api --resource
 
 5.Models
 php artisan make:model Main/Media -m
@@ -35,8 +37,8 @@ php artisan make:model Main/MediaReaction -m
 php artisan make:model Main/MediaTag -m
 php artisan make:model Main/MediaComment -m
 php artisan make:model Main/MediaHistory -m
-php artisan make:model Main/Institution -m
-php artisan make:model Main/InterestUser -m
+php artisan make:model Main/Organization -m
+php artisan make:model Main/MediaType -m
 php artisan make:model Main/SpecialityUser -m
 php artisan make:model Main/Payment -m
 php artisan make:model Settings/Role -m
@@ -44,6 +46,7 @@ php artisan make:model Settings/UserStatus -m
 php artisan make:model Settings/PaymentStatus -m
 php artisan make:model Settings/OrganizationCategory -m
 php artisan make:model Settings/Organization -m
+php artisan make:model Settings/ContentCategory -m
 php artisan make:model Other/County -m
 php artisan make:model Other/Constituency -m
 php artisan make:model Other/Ward -m

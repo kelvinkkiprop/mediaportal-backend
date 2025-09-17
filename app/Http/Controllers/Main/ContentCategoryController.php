@@ -5,16 +5,16 @@ namespace App\Http\Controllers\Main;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 // Add
-use App\Models\Main\MediaCategory;
+use App\Models\Main\ContentCategory;
 
-class MediaCategoryController extends Controller
+class ContentCategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return MediaCategory::orderBy('created_at', 'desc')->paginate(10);
+        return ContentCategory::orderBy('name', 'asc')->paginate(10);
     }
 
     /**
@@ -23,10 +23,10 @@ class MediaCategoryController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'name' => 'required|string',
+            'ttile' => 'required|string',
         ]);
 
-        $item = MediaCategory::create([
+        $item = ContentCategory::create([
             'name' => $fields['name'],
         ]);
 
@@ -44,7 +44,7 @@ class MediaCategoryController extends Controller
      */
     public function show(string $id)
     {
-        return MediaCategory::find($id);
+        return ContentCategory::find($id);
     }
 
     /**
@@ -56,7 +56,7 @@ class MediaCategoryController extends Controller
             'name' => 'required|string',
         ]);
 
-        $item = MediaCategory::where('id', $id)->update([
+        $item = ContentCategory::where('id', $id)->update([
             'name' => $fields['name'],
         ]);
 
@@ -72,7 +72,7 @@ class MediaCategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $item = MediaCategory::find($id);
+        $item = ContentCategory::find($id);
         $item->delete();
 
         $response =[
@@ -93,7 +93,7 @@ class MediaCategoryController extends Controller
         ]);
 
         $term = $fields['search_term'];
-        $items = MediaCategory::where(function($query) use($term){
+        $items = ContentCategory::where(function($query) use($term){
             $query->where('name','LIKE','%'.$term.'%');
             $query->orWhere('alias','LIKE','%'.$term.'%');
         })->get();

@@ -4,27 +4,10 @@ namespace App\Models\Main;
 
 use Illuminate\Database\Eloquent\Model;
 // Add
-use Illuminate\Support\Str;
+use App\Models\Main\ContentCategory;
 
 class MediaCategory extends Model
 {
-    /**
-     * UUIDs
-     */
-    public $incrementing = false;
-    protected $keyType = 'string';
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = (string) Str::uuid();
-            }
-        });
-    }
-
-
     /**
      * The attributes that are mass assignable.
      *
@@ -32,31 +15,46 @@ class MediaCategory extends Model
      */
     protected $fillable = [
         'id',
-        'name',
-        'description',
-        'thumbnail',
-        'type_id',
-        'status_id',
+        'media_id',
+        'category_id',
     ];
 
-
-    /**
+      /**
     * appends
     */
     protected $appends = [
-        'thumbnail_url',
+        'name',
     ];
 
-    // getThumbnailUrlAttribute
-    public function getThumbnailUrlAttribute()
+
+    // GETTERS&SETTERS
+    public function getNameAttribute()
     {
-        $value = $this->id;
+        $value = $this->category_id;
         if(is_null($value)){
             return null;
         }else{
-            $path = config('app.asset_url').config('app.paths.file_download');
-            return $path.$value."/thumbnail.jpg";
+            return ContentCategory::find($value)->name;
         }
+    }
+
+
+
+    /**
+     * category
+     */
+    public function category()
+    {
+        return $this->belongsTo(ContentCategory::class);
+    }
+
+
+    /**
+     * related
+     */
+    public function related()
+    {
+        return $this->belongsTo(Media::class);
     }
 
 }

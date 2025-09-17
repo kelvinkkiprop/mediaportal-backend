@@ -12,14 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('media_categories', function (Blueprint $table) {
-            // $table->id();
-            $table->uuid('id')->primary();
-            $table->string('name')->nullable();
-            $table->string('alias')->nullable();
-            $table->longText('description')->nullable();
-            $table->string('thumbnail')->nullable();
-            $table->unsignedBigInteger('type_id')->default(1); //Global/Local
-            $table->unsignedBigInteger('status_id')->default(1);
+            $table->id();
+            $table->uuid('media_id')->nullable();
+            $table->uuid('category_id')->nullable();
             $table->timestamps();
         });
     }

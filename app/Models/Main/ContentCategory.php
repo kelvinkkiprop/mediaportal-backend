@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models\Settings;
+namespace App\Models\Main;
 
 use Illuminate\Database\Eloquent\Model;
+// Add
 use Illuminate\Support\Str;
 
-class Organization extends Model
+class ContentCategory extends Model
 {
     /**
      * UUIDs
@@ -25,16 +26,22 @@ class Organization extends Model
 
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'id',
-        'name',
-        'alias',
-        'status_id',
+    * appends
+    */
+    protected $appends = [
+        'thumbnail_url',
     ];
 
+    // getThumbnailUrlAttribute
+    public function getThumbnailUrlAttribute()
+    {
+        $value = $this->id;
+        if(is_null($value)){
+            return null;
+        }else{
+            $path = config('app.asset_url').config('app.paths.file_download');
+            return $path.$value."/thumbnail.jpg";
+        }
+    }
 
 }

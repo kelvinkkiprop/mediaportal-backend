@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
 use App\Models\Main\MediaStatus;
+use App\Models\Main\MediaCategory;
 
 class Media extends Model
 {
@@ -39,6 +40,9 @@ class Media extends Model
         'id',
         'title',
         'description',
+        'date_produced',
+        'tags',
+        'organization_id',
         'src_path',
         'hls_master',
         'thumbnail_path',
@@ -203,6 +207,14 @@ class Media extends Model
     public function reactions()
     {
         return $this->hasMany(MediaReaction::class);
+    }
+
+    /**
+     * categories
+     */
+    public function categories()
+    {
+        return $this->hasMany(MediaCategory::class);
     }
 
     /**
