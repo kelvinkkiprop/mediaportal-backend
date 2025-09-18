@@ -113,7 +113,7 @@ class Media extends Model
     public function getServerLinkAttribute()
     {
         $path = config('app.live_server');
-        return "rtmp://".$path."live";
+        return $path;
     }
 
     public function getFullHlsMasterAttribute()
