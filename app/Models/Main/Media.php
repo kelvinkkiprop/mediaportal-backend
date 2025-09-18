@@ -93,6 +93,8 @@ class Media extends Model
         'dislikes_count',
         'total_views',
         'total_comments',
+
+        'server_link'
     ];
 
 
