@@ -42,7 +42,7 @@ return new class extends Migration
             $table->uuid('approved_by')->nullable();
             $table->dateTime('approved_on')->nullable();
 
-            $table->string('live_stream_link')->nullable()->comment('hashed stream key');
+            $table->string('stream_key')->nullable()->comment('hashed stream key');
             $table->unsignedBigInteger('live_stream_status_id')->default(1); // scheduled|starting|live|ended|failed
             $table->timestamp('scheduled_at')->nullable();
             $table->timestamp('started_at')->nullable();

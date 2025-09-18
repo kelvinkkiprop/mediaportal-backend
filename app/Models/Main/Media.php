@@ -70,7 +70,7 @@ class Media extends Model
         'approved_by',
         'approved_on',
 
-        'live_stream_link',
+        'stream_key',
         'live_stream_status_id',
         'scheduled_at',
         'started_at',

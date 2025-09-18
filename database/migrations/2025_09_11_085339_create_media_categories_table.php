@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('media_categories', function (Blueprint $table) {
             $table->id();
-            $table->uuid('media_id')->nullable();
+            $table->foreignUuid('media_id')->constrained('media')->cascadeOnDelete();
             $table->uuid('category_id')->nullable();
+
             $table->timestamps();
         });
     }
