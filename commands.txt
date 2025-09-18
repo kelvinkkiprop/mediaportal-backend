@@ -242,21 +242,56 @@ rtmp {
     }
 }
 
+
 3️⃣ /etc/nginx/streaming_mediaportal_http.conf
 # Only HTTP server blocks here
+
 server {
-    listen 80;
+    listen 8080;
+    server_name stream.cms.konza.go.ke www.stream.cms.konza.go.ke 102.210.148.48;
 
     location /hls {
-        types {
-            application/vnd.apple.mpegurl m3u8;
-            video/mp2t ts;
+        alias /var/www/hls;
+
+        # Handle CORS properly
+        add_header Access-Control-Allow-Origin * always;
+        add_header Access-Control-Allow-Methods 'GET, HEAD, OPTIONS' always;
+        add_header Access-Control-Allow-Headers 'Range' always;
+
+        # Handle preflight requests
+        if ($request_method = 'OPTIONS') {
+            add_header Access-Control-Allow-Origin * always;
+            add_header Access-Control-Allow-Methods 'GET, HEAD, OPTIONS' always;
+            add_header Access-Control-Allow-Headers 'Range' always;
+            add_header Content-Length 0;
+            return 204;
         }
-        root /var/www;
-        add_header Cache-Control no-cache;
+
+        # Proper MIME types
+        location ~* \.(m3u8)$ {
+            add_header Cache-Control 'no-cache, no-store, must-revalidate' always;
+            add_header Pragma 'no-cache' always;
+            add_header Expires '-1' always;
+            types {
+                application/vnd.apple.mpegurl m3u8;
+            }
+        }
+
+        location ~* \.(ts)$ {
+            add_header Cache-Control 'public, max-age=3600' always;
+            types {
+                video/mp2t ts;
+            }
+        }
+    }
+
+    # Optional: Status page for monitoring
+    location /stat {
+        rtmp_stat all;
+        rtmp_stat_stylesheet static/stat.xsl;
     }
 }
-
+sudo ln -sf /etc/nginx/streaming_mediaportal_http.conf /etc/nginx/sites-enabled/
 
 4. After this setup:
 sudo nginx -t
@@ -330,16 +365,6 @@ $ sudo apt-get remove supervisor
 - remove the package and all config
 $ sudo apt-get purge supervisor
 ===============================================./SUPERVISOR===============================================
-
-
-===============================================VIDEOCIPHER===============================================
-1. Add to .env
-VIDEO_CIPHER_KEY="Apisecret TmHpMxquY8nZi6iL6cyVN8WxtQX1DwGO05VecjtJiZl806TxI7QtDQtGosPbUQ1R"
-VIDEO_CIPHER_BASE_URL=https://dev.vdocipher.com/api
-
-5. Reference
-https://www.vdocipher.com/docs/swagger/index.html
-===============================================./VIDEOCIPHER===============================================
 
 
 ===============================================CRON-JOBS===============================================

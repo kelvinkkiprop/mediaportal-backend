@@ -111,12 +111,20 @@ class Media extends Model
     public function getFullHlsMasterAttribute()
     {
         $value = $this->hls_master;
-        if(is_null($value)){
+        $value2 = $this->stream_key;
+        $value3 = $this->type_id;
+        if(is_null($value) || is_null($value2)){
             return null;
         }else{
+            if($value3==2){//live
+                $path = config('app.live_url');
+                return $path."/hls/".$value2.".m3u8";
+            }
             $path = config('app.asset_url'); //.config('app.paths.file_download');
             return $path."/storage/".$value;
         }
+
+
     }
 
     public function getThumbnailUrlAttribute()
