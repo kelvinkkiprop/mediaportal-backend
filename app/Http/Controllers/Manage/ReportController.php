@@ -79,7 +79,8 @@ class ReportController extends Controller
         $total_views_percentage    = $my_total_views> 0 ? ($my_total_views/$total_views)*100 : 0;
 
         $mYear = date('Y');
-        $allMedia = Media::where('user_id', $mCurrentUser->id)->where(DB::raw("strftime('%Y', created_at)"), $mYear)->withCount(['likes', 'comments'])->get()->groupBy(function ($media) {
+        $allMedia = Media::where('user_id',$mCurrentUser->id)->whereYear('created_at', $mYear)->withCount(['likes', 'comments'])->get()
+        ->groupBy(function ($media) {
             // Group_by_month_number(1–12)
             return (int) date('n', strtotime($media->created_at));
         });
