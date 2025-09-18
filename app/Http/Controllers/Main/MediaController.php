@@ -260,7 +260,8 @@ class MediaController extends Controller
             $my_media = Media::with(['status','mediaStatus','liveStreamStatus'])->where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
         }
 
-        $live_streams = Media::with(['mediaStatus'])->where('user_id', $user_id)->where('type_id',2)->orderBy('created_at', 'desc')->get();
+        // $live_streams = Media::with(['mediaStatus'])->where('user_id', $user_id)->where('type_id',2)->orderBy('created_at', 'desc')->get();
+        $live_streams = Media::with(['mediaStatus'])->where('type_id',2)->orderBy('created_at', 'desc')->get();
         $totals = Media::where('user_id', $user_id)->withCount(['likes', 'comments'])->get();
         $total_memory = Media::where('user_id', $user_id)->sum('file_size');
         $total_likes = $totals->sum('likes_count');

@@ -187,6 +187,88 @@ https://technoracle.com/install-laravel-on-ubuntu-22-04/
 ===============================================./NGINX===============================================
 
 
+===============================================RTMP_STREAMING_CONFIGURATION===============================================
+- Install nginx with RTMP module (Ubuntu/Debian example)
+sudo apt update
+sudo apt install libnginx-mod-rtmp
+sudo systemctl restart nginx
+
+- Check
+nginx -V 2>&1 | grep rtmp
+
+
+
+1️⃣ Main /etc/nginx/nginx.conf
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+# Include RTMP config (top-level rtmp block only)
+include /etc/nginx/streaming_mediaportal_rtmp.conf;
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # Include all HTTP server blocks
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/streaming_mediaportal_http.conf;  # HTTP server for HLS
+}
+
+
+2️⃣ sudo vim /etc/nginx/streaming_mediaportal_rtmp.conf
+# Only RTMP here, top-level
+rtmp {
+    server {
+        listen 1935;
+        chunk_size 4096;
+
+        application live {
+            live on;
+            record off;
+
+            hls on;
+            hls_path /var/www/hls;
+            hls_fragment 6s;
+            hls_playlist_length 30s;
+
+            on_publish http://api.cms.konza.go.ke/api/streams/verify;
+            on_publish_done http://api.cms.konza.go.ke/api/streams/stop;
+        }
+    }
+}
+
+3️⃣ /etc/nginx/streaming_mediaportal_http.conf
+# Only HTTP server blocks here
+server {
+    listen 80;
+
+    location /hls {
+        types {
+            application/vnd.apple.mpegurl m3u8;
+            video/mp2t ts;
+        }
+        root /var/www;
+        add_header Cache-Control no-cache;
+    }
+}
+
+
+4. After this setup:
+sudo nginx -t
+sudo systemctl start nginx
+
+5. Make sure /var/www/hls exists
+sudo mkdir -p /var/www/hls
+sudo chown -R www-data:www-data /var/www/hls
+sudo chmod -R 755 /var/www/hls
+
+===============================================./RTMP_STREAMING_CONFIGURATION===============================================
+
 ===============================================SQL===============================================
 1. Launch MySQL
 $ sudo mysql -u root -p OR sudo mysql -p -u root

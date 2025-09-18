@@ -129,6 +129,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('search-live-stream', [LiveStreamController::class, 'searchItems']);
     Route::get('unpaginated-items-live-stream', [LiveStreamController::class, 'unpaginatedItems']);
 });
+Route::post('/streams/verify', [LiveStreamController::class,'verify']); // called by nginx
+Route::post('/streams/stop', [LiveStreamController::class,'stop']);
 
 /*
 |--------------------------------------------------------------------------

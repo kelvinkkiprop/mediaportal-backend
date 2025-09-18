@@ -31,7 +31,6 @@ class LiveStreamController extends Controller
             'description' => 'required|string',
             'scheduled_at' => 'required|string',
             'thumbnail' => 'required|file|image|max:2048',
-            'live_stream_link' => 'required|string',
         ]);
 
         $uuid = Str::uuid();
@@ -66,7 +65,7 @@ class LiveStreamController extends Controller
             'description' => $fields['description'],
             'scheduled_at' => $fields['scheduled_at'],
             // 'thumbnail' => $fields['thumbnail'],
-            'live_stream_link' => $fields['live_stream_link'],
+            'stream_key' => bin2hex(random_bytes(16)),
             'type_id'=>2,
         ]);
 
@@ -137,6 +136,38 @@ class LiveStreamController extends Controller
             'data' => $items
         ];
         return response($response, 201);
+    }
+
+
+
+    /**
+     * verify_called_by_nginx_on_publish
+     */
+    public function verify(Request $request) {
+        // nginx passes stream name, etc. Validate the stream key
+        $name = $request->get('name'); // stream key used by publisher
+        $item = Stream::where('stream_key', $name)->first();
+        if (!$item){
+            return response('Denied', 403);
+        }
+        $item->update([
+            'live_stream_status_id'=>3 //Live
+        ]);
+        // optionally broadcast "stream started" via websockets
+        return response('Allowed', 200);
+    }
+
+
+    /**
+     * stop_called_by_nginx_on_stop
+     */
+    public function stop(Request $request) {
+        $name = $request->get('name');
+        $item = Stream::where('stream_key', $name)->first();
+        if ($item) $item->update([
+            'live_stream_status_id'=>4 //Ended
+        ]);
+        return response('OK', 200);
     }
 
 }
