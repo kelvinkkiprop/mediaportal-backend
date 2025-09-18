@@ -108,6 +108,12 @@ class Media extends Model
         }
     }
 
+    public function getServerLinkAttribute()
+    {
+        $path = config('app.live_server');
+        return "rtmp://".$path."live";
+    }
+
     public function getFullHlsMasterAttribute()
     {
         $mType = $this->type_id;
