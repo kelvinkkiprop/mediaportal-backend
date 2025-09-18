@@ -72,8 +72,8 @@ class DashboardController extends Controller
         //     $myInterests = InterestUser::with('interest')->distinct()->get();
         // }
         $data = [
-            'latest_media'      => Media::with(['liveStreamStatus','status'])->orderBy('created_at', 'desc')->limit(5)->get(), // Latest
-            'featured_media'    => Media::with(['liveStreamStatus','status'])->orderBy('views', 'desc')->limit(5)->get(), // Top Views
+            'latest_media'      => Media::with(['liveStreamStatus','status'])->where('status_id',2)->orderBy('created_at', 'desc')->limit(5)->get(), // Latest
+            'featured_media'    => Media::with(['liveStreamStatus','status'])->where('status_id',2)->orderBy('views', 'desc')->limit(5)->get(), // Top Views
             // 'recommended_media' => Media::inRandomOrder()->limit(5)->get(), // Random
         ];
         return response([

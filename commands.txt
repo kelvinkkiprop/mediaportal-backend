@@ -81,6 +81,7 @@ VideoCipherService.php
 9. Commands
 php artisan make:command GetVideoStatus
 composer install --optimize-autoloader --no-dev
+composer uninstall --optimize-autoloader --no-dev
 
 php artisan optimize:clear
 
