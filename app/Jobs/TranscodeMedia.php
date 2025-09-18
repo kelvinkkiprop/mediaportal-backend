@@ -36,7 +36,7 @@ class TranscodeMedia implements ShouldQueue
             }
 
             // Update status to processing
-            $media->update(['status_id' => 1]); // Processing
+            $media->update(['media_status_id' => 1]); // Processing
             Log::info("Starting transcoding for media ID: {$this->mediaId}");
             $this->transcodeVideo($media);
 
@@ -44,7 +44,7 @@ class TranscodeMedia implements ShouldQueue
             Log::error("TranscodeMedia job failed for media ID {$this->mediaId}: " . $e->getMessage());
             // Update media status to failed
             if ($media = Media::find($this->mediaId)) {
-                $media->update(['status_id' => 3]); // Failed
+                $media->update(['media_status_id' => 3]); // Failed
             }
             throw $e; // Re-throw to trigger job retry if attempts remaining
         }
@@ -111,7 +111,7 @@ class TranscodeMedia implements ShouldQueue
 
         // Update media record
         $media->update([
-            'status_id' => 2, // Ready
+            'media_status_id' => 2, // Ready
             'hls_master' => "videos/processed/{$this->mediaId}/master.m3u8",
         ]);
 
@@ -266,7 +266,7 @@ class TranscodeMedia implements ShouldQueue
         Log::error("TranscodeMedia job permanently failed for media ID {$this->mediaId}: " . $exception->getMessage());
         // Update media status to failed
         if ($media = Media::find($this->mediaId)) {
-            $media->update(['status_id' => 3]); // Failed
+            $media->update(['media_status_id' => 3]); // Failed
         }
     }
 }

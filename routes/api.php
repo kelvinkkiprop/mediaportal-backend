@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('history-media', [MediaController::class, 'historyMedia']);
     Route::post('/media/{id}/react', [MediaController::class, 'react']);
     Route::post('/media/{id}/comment', [MediaController::class, 'comment']);
+    Route::post('/media/{id}/process', [MediaController::class, 'process']);
 
     Route::post('/upload/init', [MediaController::class, 'init']);
     Route::post('/upload/chunk', [MediaController::class, 'chunk']);

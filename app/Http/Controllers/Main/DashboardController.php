@@ -72,8 +72,8 @@ class DashboardController extends Controller
         //     $myInterests = InterestUser::with('interest')->distinct()->get();
         // }
         $data = [
-            'latest_media'      => Media::orderBy('created_at', 'desc')->limit(5)->get(), // Latest
-            'featured_media'    => Media::orderBy('views', 'desc')->limit(5)->get(), // Top Views
+            'latest_media'      => Media::with(['liveStreamStatus','status'])->orderBy('created_at', 'desc')->limit(5)->get(), // Latest
+            'featured_media'    => Media::with(['liveStreamStatus','status'])->orderBy('views', 'desc')->limit(5)->get(), // Top Views
             // 'recommended_media' => Media::inRandomOrder()->limit(5)->get(), // Random
         ];
         return response([
@@ -81,6 +81,15 @@ class DashboardController extends Controller
             'message' => 'Data retrieved successfully',
             'data' => $data
         ],201);
+    }
+
+
+    /**
+    * filter
+    */
+    public function filter(string $category_id, string $term)
+    {
+        return Media::with('status')->orderBy('created_at', 'desc')->paginate(10);
     }
 
 }

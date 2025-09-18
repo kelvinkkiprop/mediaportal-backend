@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Main;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Enums\TagEnum;
 // Add
+use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -19,6 +19,7 @@ use App\Models\Main\ContentCategory;
 use App\Models\Main\MediaCategory;
 use App\Models\Main\MediaType;
 use App\Models\Settings\Organization;
+use App\Models\Settings\ContentStatus;
 
 class MediaController extends Controller
 {
@@ -55,15 +56,21 @@ class MediaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
         // return Media::find($id);
-        // $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user'])->find($id);
-        $item = Media::find($id);
+        $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user'])->find($id);
+        // $item = Media::find($id);
         $item->increment('views');
         // return $item->refresh();
-            // update
-            $mCurrentUser = auth()->user();
+            // Manual_Token_Resolution
+            $mCurrentUser = null;
+            if ($request->bearerToken()) {
+                $accessToken = PersonalAccessToken::findToken($request->bearerToken());
+                if ($accessToken) {
+                    $mCurrentUser = $accessToken->tokenable;
+                }
+            }
             if ($mCurrentUser) {
                 $latestHistory = MediaHistory::where('media_id', $id)->where('user_id', $mCurrentUser->id)->latest()->first();
                 if (!$latestHistory && $mCurrentUser) {
@@ -215,6 +222,7 @@ class MediaController extends Controller
         $content_categories = ContentCategory::orderBy('name', 'asc')->get();
         $organizations = Organization::orderBy('name', 'asc')->get();
         $media_types = MediaType::orderBy('name', 'asc')->get();
+        $content_status = ContentStatus::orderBy('name', 'asc')->get();
 
         $response =[
             'status' => 'success',
@@ -223,6 +231,7 @@ class MediaController extends Controller
                 'content_categories' => $content_categories,
                 'organizations' => $organizations,
                 'media_types' => $media_types,
+                'content_status' => $content_status,
             ]
         ];
         return response($response, 201);
@@ -241,8 +250,16 @@ class MediaController extends Controller
     public function myMedia(string $id)
     {
         $user_id = $id;
+        $mCurrentUser = auth()->user();
+
         $my_playlists = Media::with(['mediaStatus'])->where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
-        $my_media = Media::with(['mediaStatus'])->where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        $my_media = null;
+        if($mCurrentUser->role_id==1 || $mCurrentUser->role_id==2 || $mCurrentUser->role_id==4){
+            $my_media = Media::with(['status','mediaStatus','liveStreamStatus'])->orderBy('created_at', 'desc')->get();
+        }else{
+            $my_media = Media::with(['status','mediaStatus','liveStreamStatus'])->where('user_id', $user_id)->orderBy('created_at', 'desc')->get();
+        }
+
         $live_streams = Media::with(['mediaStatus'])->where('user_id', $user_id)->where('type_id',2)->orderBy('created_at', 'desc')->get();
         $totals = Media::where('user_id', $user_id)->withCount(['likes', 'comments'])->get();
         $total_memory = Media::where('user_id', $user_id)->sum('file_size');
@@ -260,10 +277,10 @@ class MediaController extends Controller
             'status' => 'success',
             'message' => 'Data retrieved successfully',
             'data' => [
-                'my_playlists' => $my_playlists,
-                'my_media'     => $my_media,
-                'live_streams' => $live_streams,
-                'analytics'    => $analytics,
+                'my_playlists'=> $my_playlists,
+                'my_media'    => $my_media,
+                'live_streams'=> $live_streams,
+                'analytics'   => $analytics,
             ]
         ];
         return response($response, 201);
@@ -362,6 +379,26 @@ class MediaController extends Controller
         return response($response, 201);
     }
 
+    /**
+     * process
+     */
+    public function process(Request $request, string $id)
+    {
+       $fields = $request->validate([
+            'status_id' => 'required|integer',
+        ]);
+
+        $item = Media::where('id', $id)->update([
+            'status_id' => $fields['status_id'],
+        ]);
+
+
+        return response([
+            'status' => 'success',
+            'message' => 'Media processed successfully',
+            'data' => $item
+        ],201);
+    }
 
 
 

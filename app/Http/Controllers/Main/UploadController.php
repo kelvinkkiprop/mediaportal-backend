@@ -153,7 +153,7 @@ class UploadController extends Controller
                 'src_path'    => $finalPath, // This should be relative to storage/app/public/
                 'file_size'   => $finalFileSize,
                 'mime_type'   => 'video/mp4',
-                'type_id'     => 2,
+                'type_id'     => 1,
                 'status_id'   => 0, // Uploaded, pending processing
             ]);
 

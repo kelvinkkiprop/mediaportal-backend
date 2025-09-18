@@ -47,6 +47,7 @@ php artisan make:model Settings/PaymentStatus -m
 php artisan make:model Settings/OrganizationCategory -m
 php artisan make:model Settings/Organization -m
 php artisan make:model Settings/ContentCategory -m
+php artisan make:model Settings/ContentStatus -m
 php artisan make:model Other/County -m
 php artisan make:model Other/Constituency -m
 php artisan make:model Other/Ward -m
@@ -107,7 +108,9 @@ $ sudo apt reinstall nginx
 2. Configuring Laravel on Ubuntu 22.04 with nginix
 - Provide the web server clients the write access to the data storage and cache directories
 $ sudo chown -R www-data.www-data /var/www/html/mediaportal-backend/storage
+$ sudo chown -R www-data:www-data /var/www/html/mediaportal-backend/storage
 $ sudo chown -R www-data.www-data /var/www/html/mediaportal-backend/bootstrap/cache
+$ sudo chown -R www-data:www-data /var/www/html/mediaportal-backend/bootstrap/cache
 - Add a new virtual host config file to /etc/nginx/sites-available:
 $ sudo vim /etc/nginx/sites-available/laravel_mediaportal_backend
 
@@ -129,13 +132,30 @@ server {
         try_files $uri $uri/ /index.php?$query_string;
     }
 
+
+   # CORS for media files (HLS .m3u8 + .ts, plus mp4/webm)
+    location ~* \.(m3u8|ts|mp4|webm|ogg)$ {
+        add_header 'Access-Control-Allow-Origin' 'https://cms.konza.go.ke' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Range, Origin, Content-Type, Accept' always;
+        add_header 'Access-Control-Expose-Headers' 'Content-Length, Content-Range' always;
+        types { application/vnd.apple.mpegurl m3u8; video/mp2t ts; }
+    }
+    # Static assets (optional: cache for 30 days)
+    location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|ttf|svg|eot|mp4|webm)$ {
+        expires 30d;
+        access_log off;
+        add_header Cache-Control "public";
+    }
+
+
     location = /favicon.ico { access_log off; log_not_found off; }
     location = /robots.txt  { access_log off; log_not_found off; }
 
     error_page 404 /index.php;
 
     location ~ \.php$ {
-        fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
         fastcgi_index index.php;
         fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         include fastcgi_params;

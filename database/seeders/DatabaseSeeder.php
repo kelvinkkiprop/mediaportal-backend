@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             MediaLiveStreamSeeder::class,
             MediaStatusSeeder::class,
             LiveStreamStatusSeeder::class,
+            ContentStatusSeeder::class,
         ]);
 
 

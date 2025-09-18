@@ -48,7 +48,7 @@ class UploadToS3 implements ShouldQueue
         }
 
         $media->update([
-            'status_id'      => 3, // Uploaded
+            'media_status_id'=> 3, // Uploaded
             'processed_path' => "videos/processed/{$this->mediaId}/master.m3u8",
         ]);
     }

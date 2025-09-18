@@ -10,6 +10,7 @@ use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
 use App\Models\Main\MediaStatus;
 use App\Models\Main\MediaCategory;
+use App\Models\Settings\ContentStatus;
 
 class Media extends Model
 {
@@ -65,6 +66,7 @@ class Media extends Model
 
         'created_by',
         'updated_by',
+
         'approved_by',
         'approved_on',
 
@@ -254,6 +256,13 @@ class Media extends Model
      */
     public function liveStreamStatus(){
         return $this->hasOne(LiveStreamStatus::class, 'id', 'live_stream_status_id');
+    }
+
+    /**
+     * status
+     */
+    public function status(){
+        return $this->hasOne(ContentStatus::class, 'id', 'status_id');
     }
 
 }

@@ -16,9 +16,9 @@ class MediaStatusSeeder extends Seeder
     {
         // Default
         $items = [
-            ['id'=>1, 'name'=>'Pre-upload', 'alias'=>'Uploading', 'created_at'=>now()],
-            ['id'=>2, 'name'=>'Queued', 'alias'=>'Processing', 'created_at'=>now()],
-            ['id'=>3, 'name'=>'Ready', 'alias'=>'Ready', 'created_at'=>now()],
+            ['id'=>1, 'name'=>'Queued', 'alias'=>'Processing', 'created_at'=>now()],
+            ['id'=>2, 'name'=>'Ready', 'alias'=>'Ready', 'created_at'=>now()],
+            ['id'=>3, 'name'=>'Failed', 'alias'=>'Fail', 'created_at'=>now()],
         ];
         MediaStatus::insert($items);
     }
