@@ -14,7 +14,7 @@ class ContentCategoryController extends Controller
      */
     public function index()
     {
-        return ContentCategory::with(['media'])->orderBy('name', 'asc')->paginate(10);
+        return ContentCategory::with(['mediaCategory'])->orderBy('name', 'asc')->paginate(10);
     }
 
     /**

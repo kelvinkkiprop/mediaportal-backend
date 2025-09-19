@@ -89,7 +89,7 @@ class MediaController extends Controller
                     }
                 }
             }
-        return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user','categories']);
+        return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user','categories', 'categories.media']);
 
         // $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user','categories'])->find($id);
 

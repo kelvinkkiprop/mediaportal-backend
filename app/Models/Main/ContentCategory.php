@@ -28,44 +28,30 @@ class ContentCategory extends Model
 
 
     /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'id',
+        'name',
+        'alias',
+    ];
+
+    /**
     * appends
     */
     protected $appends = [
         'thumbnail_url',
         'total_media',
-        // 'random_thumbnail_url',
     ];
 
-    // // getThumbnailUrlAttribute
-    // public function getThumbnailUrlAttribute()
-    // {
-    //     $value = $this->id;
-    //     if(is_null($value)){
-    //         return null;
-    //     }else{
-    //         $path = config('app.asset_url').config('app.paths.file_download');
-    //         return $path.$value."/thumbnail.jpg";
-    //     }
-    // }
 
 
-    /**
-     * media
-     */
-    public function media()
-    {
-        return $this->belongsTo(Media::class, 'media_id', 'id');
-    }
-
-
-    public function getTotalMediaAttribute()
-    {
-        return $this->media()->count();
-    }
-
+   // GETTERS&SETTERS
     public function getThumbnailUrlAttribute()
     {
-        $value = $this->media()->inRandomOrder()->first();
+        $value = $this->mediaCategory()->inRandomOrder()->first();
         if(is_null($value)){
             return null;
         }else{
@@ -74,5 +60,24 @@ class ContentCategory extends Model
         }
     }
 
+
+
+    /**
+     * mediaCategory
+     */
+    public function mediaCategory()
+    {
+        return $this->hasMany(MediaCategory::class, 'category_id', 'id');
+        // return $this->belongsTo(MediaCategory::class, 'category_id', 'id');
+    }
+
+
+    /**
+     * getTotalMediaAttribute
+     */
+    public function getTotalMediaAttribute()
+    {
+        return $this->mediaCategory()->count();
+    }
 
 }
