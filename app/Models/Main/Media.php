@@ -248,11 +248,11 @@ class Media extends Model
     /**
      * category
      */
-    public function category()
-    {
-        // return $this->hasMany(MediaCategory::class);
-        return $this->hasOne(MediaCategory::class, 'media_id', 'id');
-    }
+    // public function category()
+    // {
+    //     // return $this->hasMany(MediaCategory::class);
+    //     return $this->hasOne(MediaCategory::class, 'media_id', 'id');
+    // }
 
 
     /**

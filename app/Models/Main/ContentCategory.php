@@ -49,6 +49,15 @@ class ContentCategory extends Model
     // }
 
 
+    /**
+     * media
+     */
+    public function media()
+    {
+        return $this->belongsTo(Media::class, 'media_id', 'id');
+    }
+
+
     public function getTotalMediaAttribute()
     {
         return $this->media()->count();
