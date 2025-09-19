@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 // Add
 use Illuminate\Support\Str;
 use App\Models\Main\MediaCategory;
+use App\Models\Main\Media;
 
 class ContentCategory extends Model
 {
@@ -64,13 +65,5 @@ class ContentCategory extends Model
         }
     }
 
-
-    /**
-     * media
-     */
-    public function media()
-    {
-        return $this->hasMany(MediaCategory::class, 'category_id');
-    }
 
 }

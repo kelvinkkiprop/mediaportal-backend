@@ -304,6 +304,46 @@ sudo chmod -R 755 /var/www/hls
 
 ===============================================./RTMP_STREAMING_CONFIGURATION===============================================
 
+
+===============================================FFmpeg_COMMAND_QUALITY_CONTROL_ON_STREAMING===============================================
+1. Here’s a production-ready FFmpeg command you can run manually or as a systemd service
+ffmpeg -i rtmp://localhost/live/streamkey \
+  -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k \
+  -vf "scale=-2:720" -c:a aac -b:a 128k -ac 2 \
+  -f hls -hls_time 6 -hls_list_size 10 -hls_flags delete_segments \
+  /var/www/hls/streamkey/index.m3u8
+
+
+2. Create systemd service: /etc/systemd/system/ffmpeg-hls.service:
+[Unit]
+Description=FFmpeg HLS Transcoder
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/ffmpeg -i rtmp://stream.cms.konza.go.ke/live/streamkey \
+  -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k \
+  -vf "scale=-2:720" -c:a aac -b:a 128k -ac 2 \
+  -f hls -hls_time 6 -hls_list_size 10 -hls_flags delete_segments \
+  /var/www/hls/streamkey/index.m3u8
+Restart=always
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
+
+
+3. Reload and start:
+sudo systemctl daemon-reload
+sudo systemctl enable ffmpeg-hls
+sudo systemctl start ffmpeg-hls
+
+===============================================./FFmpeg_COMMAND_QUALITY_CONTROL_ON_STREAMING===============================================
+
+
+
+/etc/systemd/system/ffmpeg-hls.service
+
 ===============================================SQL===============================================
 1. Launch MySQL
 $ sudo mysql -u root -p OR sudo mysql -p -u root

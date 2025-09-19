@@ -98,6 +98,7 @@ class Media extends Model
     ];
 
 
+
     // GETTERS&SETTERS
     public function getFullSrcPathAttribute()
     {
@@ -215,6 +216,10 @@ class Media extends Model
     }
 
 
+
+
+
+
     /**
      * user
      */
@@ -236,8 +241,36 @@ class Media extends Model
      */
     public function categories()
     {
-        return $this->hasMany(MediaCategory::class);
+        return $this->hasMany(MediaCategory::class, 'media_id', 'id');
     }
+
+
+    /**
+     * category
+     */
+    public function category()
+    {
+        // return $this->hasMany(MediaCategory::class);
+        return $this->hasOne(MediaCategory::class, 'media_id', 'id');
+    }
+
+
+    /**
+     * relatedMedia
+     */
+    // public function relatedMedia()
+    // {
+    //     // Get category IDs of this media
+    //     $categoryIds = $this->categories->pluck('category_id');
+
+    //     // Query other media with at least one matching category
+    //     return Media::whereHas('categories', function($query) use ($categoryIds) {
+    //             $query->whereIn('category_id', $categoryIds);
+    //         })
+    //         ->where('id', '!=', $this->id) // exclude current media
+    //         ->get(); // fetch results as collection
+    // }
+
 
     /**
      * comments
