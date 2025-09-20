@@ -15,7 +15,7 @@ return [
     |
     */
 
-      'paths' => [
+    'paths' => [
         'api/*',
         'sanctum/csrf-cookie',
         'storage/*',
@@ -26,9 +26,9 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:4200',      // Angular dev
-        'http://localhost:8000',      // Laravel local
-        'https://cms.konza.go.ke',    // frontend
+        'http://localhost:4200',      // Frontend_dev
+        'http://localhost:8000',      // Backend_local
+        'https://cms.konza.go.ke',    // Frontend_prod
     ],
 
     'allowed_origins_patterns' => [],
@@ -46,7 +46,7 @@ return [
 
     'max_age' => 0,
 
-    // If you’re using JWT, Sanctum or session cookies, set this to true
+    // If_using_JWT_Sanctum_or_session_cookies_set_to_true
     'supports_credentials' => false, //true,
 
 ];

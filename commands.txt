@@ -64,15 +64,21 @@ php artisan queue:table
 7. Middleware
 i. Create
 php artisan make:middleware AdminsOnly
-php artisan make:middleware MentorsOnly
-php artisan make:middleware AdminOrMentorsOnly
+php artisan make:middleware LocalStorageCorsOnly
+
 ii. Assigning Middleware To Routes: Within App\Http\Kernel class
 protected $routeMiddleware = [
     //Add
     'adminonly' => \App\Http\Middleware\AdminsOnly::class,
-    'mentoronly' => \App\Http\Middleware\MentorsOnly::class,
-    'adminormentoronly' => \App\Http\Middleware\AdminOrMentorsOnly::class,
 ];
+
+iii. in bootstrap/app.php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->web(append: [
+        \App\Http\Middleware\LocalStorageCorsOnly::class,
+    ]);
+});
+
 
 8. Services
 Under app/Services/ create
@@ -341,9 +347,6 @@ sudo systemctl start ffmpeg-hls
 ===============================================./FFmpeg_COMMAND_QUALITY_CONTROL_ON_STREAMING===============================================
 
 
-
-/etc/systemd/system/ffmpeg-hls.service
-
 ===============================================SQL===============================================
 1. Launch MySQL
 $ sudo mysql -u root -p OR sudo mysql -p -u root
@@ -545,8 +548,3 @@ private function getFFmpegPath(): string
     throw new Exception("FFmpeg not found. Please install FFmpeg and ensure it's accessible.");
 }
 ===============================================./FFMPEG===============================================
-
-
-
-
- composer require dreamersdesire/laravel-live-streaming:dev-main

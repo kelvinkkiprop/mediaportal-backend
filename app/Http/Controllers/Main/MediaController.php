@@ -92,7 +92,6 @@ class MediaController extends Controller
         return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user','categories', 'categories.media']);
 
         // $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user','categories'])->find($id);
-
         // // category_IDs
         // $categoryIDs = MediaCategory::where('media_id', $id)->pluck('category_id');
         // // media_IDs_in_those_categories
@@ -100,13 +99,11 @@ class MediaController extends Controller
         // // Fetch_records
         // $related = Media::whereIn('id', $relatedMediaIDs)->get();
 
-
         // $data = [
         //     'item' => $item,
         //     'related' => $related
         // ];
         // return $data;
-
     }
 
     /**
