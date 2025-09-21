@@ -51,10 +51,15 @@ class MediaCategory extends Model
     /**
      * media
      */
-    public function media()
-    {
-        return $this->belongsTo(Media::class, 'media_id', 'id');
-    }
+    // public function media()
+    // {
+    //     return $this->belongsTo(Media::class, 'media_id', 'id');
+    // }
+
+public function media()
+{
+    return $this->belongsToMany(Media::class, 'media_categories', 'category_id', 'media_id');
+}
 
 
 }

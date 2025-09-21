@@ -20,6 +20,7 @@ php artisan make:controller Main/DashboardController
 php artisan make:controller Main/AuthController
 php artisan make:controller Main/UserController --api --resource
 php artisan make:controller Main/MediacategoryController --api --resource
+php artisan make:controller Main/MediaCommentController --api --resource
 php artisan make:controller Main/LiveStreamController --api --resource
 php artisan make:controller Main/HomeController
 php artisan make:controller Manage/OrganizationController --api --resource

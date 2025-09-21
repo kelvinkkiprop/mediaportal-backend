@@ -57,7 +57,7 @@ class Media extends Model
         'views',
 
         'type_id',
-        'category_id',
+        // 'category_id',
         'visibility_id',
         'is_recordable',
         'is_streamable',
@@ -94,7 +94,7 @@ class Media extends Model
         'total_views',
         'total_comments',
 
-        'server_link'
+        'server_link',
     ];
 
 
@@ -225,7 +225,7 @@ class Media extends Model
      */
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id')->select(['id','first_name','last_name']);
     }
 
     /**
@@ -244,24 +244,39 @@ class Media extends Model
         return $this->hasMany(MediaCategory::class, 'media_id', 'id');
     }
 
-
-    /**
-     * category
-     */
-    // public function category()
-    // {
-    //     // return $this->hasMany(MediaCategory::class);
-    //     return $this->hasOne(MediaCategory::class, 'media_id', 'id');
-    // }
-
-
     /**
      * relatedMedia
      */
+    // public function getRelatedMediaAttribute()
+    // {
+    // // Get all category IDs for the current media
+    // $categoryIds = $this->categories()->pluck('category_id');
+
+    // // Find other media that share any of those categories
+    // return Media::whereHas('categories', function ($query) use ($categoryIds) {
+    //     $query->whereIn('category_id', $categoryIds);
+    // })
+    // ->where('id', '!=', $this->id) // Exclude current media
+    // ->get();
+
+    // }
+
     // public function relatedMedia()
     // {
+    //     // Step 1: Get category IDs for the current media
+    //     $categoryIds = $this->categories()->pluck('category_id');
+
+    //     // Step 2: Find other media that share these categories
+    //     return Media::whereHas('categories', function ($query) use ($categoryIds) {
+    //         $query->whereIn('category_id', $categoryIds);
+    //     })
+    //     ->where('id', '!=', $this->id) // Exclude the current media
+    //     ->get();
+
+    //     return $this->categories->where('media_id', $this->id)->get();
     //     // Get category IDs of this media
     //     $categoryIds = $this->categories->pluck('category_id');
+    //     return $categoryIds;
 
     //     // Query other media with at least one matching category
     //     return Media::whereHas('categories', function($query) use ($categoryIds) {
@@ -295,7 +310,6 @@ class Media extends Model
     {
         return $this->reactions()->where('type_id', 2);
     }
-
 
     /**
      * mediaStatus

@@ -33,10 +33,11 @@ return new class extends Migration
             $table->unsignedBigInteger('ward_id')->nullable();
             $table->date('dob')->nullable();
             $table->longText('bio')->nullable();
-            $table->boolean('receive_notifications')->default(true);
 
-            $table->string('referral_code')->unique()->nullable();
             $table->foreignId('referred_by_id')->nullable();
+            $table->string('referral_code')->unique()->nullable();
+            $table->boolean('autoplay')->default(true);
+            $table->boolean('receive_notifications')->default(true);
 
             $table->unsignedBigInteger('organization_category_id')->nullable();
             $table->unsignedBigInteger('organization_id')->nullable();

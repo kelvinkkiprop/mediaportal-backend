@@ -193,6 +193,36 @@ class ProfileController extends Controller
 
 
     /**
+     * updateAutoplay
+     */
+    public function updateAutoplay(Request $request)
+    {
+        $fields = $request->validate([
+            'autoplay' => 'required|boolean',
+        ]);
+
+        $mCurrentUser = auth()->user();
+        $item = User::where('id', $mCurrentUser->id)->update([
+            // 'autoplay' => ($request['autoplay']=='on') ? true : false
+            'autoplay' => $fields['autoplay'],
+        ]);
+
+        $user = User::with(['role','status'])->find($mCurrentUser->id);
+        $token = $user->createToken('token')->plainTextToken;
+        $data = [
+            'user' => $user,
+            'token' => $token,
+        ];
+        return response([
+            'status' => 'success',
+            'message' => 'Autoplay updated successfully',
+            'data' => $data
+        ],201);
+    }
+
+
+
+    /**
      * unpaginatedItems
      */
     public function unpaginatedItems()

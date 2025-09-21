@@ -10,6 +10,7 @@ use App\Http\Controllers\Main\MediaController;
 use App\Http\Controllers\Main\ContentCategoryController;
 use App\Http\Controllers\Main\MediaTagController;
 use App\Http\Controllers\Main\LiveStreamController;
+use App\Http\Controllers\Main\MediaCommentController;
 // Manage
 use App\Http\Controllers\Manage\UserController;
 use App\Http\Controllers\Manage\ReportController;
@@ -101,9 +102,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 |--------------------------------------------------------------------------
 */
 Route::get('media/{media}', [MediaController::class, 'show'])->name('media.show');
+Route::get('related-media/{id}', [MediaController::class, 'relatedMedia']);
 Route::middleware('auth:sanctum')->group(function () {
-    // Route::resource('media', MediaController::class)->except(['show']);
-    Route::resource('media', MediaController::class);
+    // Route::resource('media', MediaController::class);
+    Route::resource('media', MediaController::class)->except(['show']);
     Route::post('search-media', [MediaController::class, 'searchItems']);
     Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);
 
@@ -117,6 +119,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/upload/init', [MediaController::class, 'init']);
     Route::post('/upload/chunk', [MediaController::class, 'chunk']);
     Route::post('/upload/complete', [MediaController::class, 'complete']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| MediaCommentController
+|--------------------------------------------------------------------------
+*/
+Route::get('filtered-media-comments/{id}', [MediaCommentController::class, 'filteredMediaComments']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('media-comments', MediaCommentController::class);
 });
 
 /*
@@ -140,25 +152,15 @@ Route::post('/streams/stop', [LiveStreamController::class,'stop']);
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::resource('profiles', ProfileController::class);
     Route::get('unpaginated-items-profiles', [ProfileController::class, 'unpaginatedItems']);
+
     Route::get('filter-subjects-profiles/{class_level_id}', [ProfileController::class, 'filterSubjects']);
-    Route::post('update-notification-profiles', [ProfileController::class, 'updateNotifications']);
     Route::get('filter-constituencies/{county_id}', [ProfileController::class, 'filterConstituencies']);
     Route::get('filter-wards/{constituency_id}/{class_level_id}', [ProfileController::class, 'filterWards']);
+
+    Route::post('update-notification-profiles', [ProfileController::class, 'updateNotifications']);
+    Route::post('update-autoplay-profiles', [ProfileController::class, 'updateAutoplay']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| ProfileController
-|--------------------------------------------------------------------------
-*/
-Route::group(['middleware' => ['auth:sanctum']], function() {
-    Route::resource('profiles', ProfileController::class);
-    Route::get('unpaginated-items-profiles', [ProfileController::class, 'unpaginatedItems']);
-    Route::get('filter-subjects-profiles/{class_level_id}', [ProfileController::class, 'filterSubjects']);
-    Route::post('update-notification-profiles', [ProfileController::class, 'updateNotifications']);
-    Route::get('filter-constituencies/{county_id}', [ProfileController::class, 'filterConstituencies']);
-    Route::get('filter-wards/{constituency_id}/{class_level_id}', [ProfileController::class, 'filterWards']);
-});
 
 /*
 |--------------------------------------------------------------------------

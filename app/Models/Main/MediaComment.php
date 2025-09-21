@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 // Add
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\Main\Media;
 
 class MediaComment extends Model
 {
@@ -40,7 +41,8 @@ class MediaComment extends Model
         'status_id',
     ];
 
-        /**
+
+    /**
     * appends
     */
     protected $appends = [
@@ -63,6 +65,14 @@ class MediaComment extends Model
     public function user()
     {
         return $this->hasOne(User::class, 'id', 'user_id')->select(['id', 'first_name', 'last_name']);
+    }
+
+    /**
+     * media
+     */
+    public function media()
+    {
+        return $this->hasOne(Media::class, 'id', 'media_id');
     }
 
 }

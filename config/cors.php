@@ -47,6 +47,6 @@ return [
     'max_age' => 0,
 
     // If_using_JWT_Sanctum_or_session_cookies_set_to_true
-    'supports_credentials' => false, //true,
+    'supports_credentials' => true,
 
 ];

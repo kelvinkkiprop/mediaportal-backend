@@ -70,10 +70,11 @@ class User extends Authenticatable
         'constituency_id',
         'ward_id',
         'bio',
-        'receive_notifications',
 
-        'referral_code',
         'referred_by_id',
+        'referral_code',
+        'autoplay',
+        'receive_notifications',
 
         'organization_category_id',
         'organization_id',
@@ -100,6 +101,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'autoplay' => 'boolean',
         ];
     }
 

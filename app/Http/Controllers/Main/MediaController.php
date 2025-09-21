@@ -58,11 +58,11 @@ class MediaController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        // return Media::find($id);
-        $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user'])->find($id);
-        // $item = Media::find($id);
+
+        $item = Media::find($id);
         $item->increment('views');
         // return $item->refresh();
+        // return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user','categories']);
             // Manual_Token_Resolution
             $mCurrentUser = null;
             if ($request->bearerToken()) {
@@ -89,21 +89,9 @@ class MediaController extends Controller
                     }
                 }
             }
-        return $item->refresh()->load(['user', 'likes', 'dislikes','comments','comments.user','categories', 'categories.media']);
 
-        // $item = Media::with(['user', 'likes', 'dislikes','comments','comments.user','categories'])->find($id);
-        // // category_IDs
-        // $categoryIDs = MediaCategory::where('media_id', $id)->pluck('category_id');
-        // // media_IDs_in_those_categories
-        // $relatedMediaIDs = MediaCategory::whereIn('category_id', $categoryIDs)->where('media_id', '!=', $id)->pluck('media_id');
-        // // Fetch_records
-        // $related = Media::whereIn('id', $relatedMediaIDs)->get();
-
-        // $data = [
-        //     'item' => $item,
-        //     'related' => $related
-        // ];
-        // return $data;
+        // return Media::find($id);
+        return Media::with(['user','categories'])->find($id);
     }
 
     /**
@@ -128,7 +116,7 @@ class MediaController extends Controller
             'title' => $fields['title'],
             'description' => $fields['description'],
             'type_id' => $fields['type_id'],
-            'category_id' => $fields['category_id'],
+            // 'category_id' => $fields['category_id'],
             'date_produced' => $fields['date_produced'],
             'tags' => $fields['tags'],
             'organization_id' => $fields['organization_id'],
@@ -239,6 +227,17 @@ class MediaController extends Controller
 
 
 
+    /**
+     * relatedMedia
+     */
+    public function relatedMedia(string $id)
+    {
+        $categoryIds = MediaCategory::where('media_id', $id)->pluck('category_id');
+        // Find_related_media_less_original
+        $relatedMediaIds = MediaCategory::whereIn('category_id', $categoryIds)->where('media_id', '!=', $id)->pluck('media_id');
+        // return Media::whereIn('id', $relatedMediaIds)->orderBy('created_at', 'desc')->paginate(3);
+        return Media::whereIn('id', $relatedMediaIds)->inRandomOrder()->paginate(3);
+    }
 
 
     /**
@@ -349,32 +348,6 @@ class MediaController extends Controller
     public function historyMedia()
     {
         return MediaHistory::with(['media','media.user'])->orderBy('created_at', 'desc')->paginate(10);
-    }
-
-    /**
-    * comment
-    */
-    public function comment(Request $request, $id)
-    {
-        $fields = $request->validate([
-            'text' => 'required|string|max:500',
-        ]);
-
-        $mCurrentUser = auth()->user();
-        $item = MediaComment::create([
-            'user_id' => $mCurrentUser->id,
-            'media_id' => $id,
-            // 'parent_id' => $id,
-            'text' => $fields['text']
-        ]);
-
-        $item = Media::with(['comments','comments.user','user', 'likes', 'dislikes'])->find($id);
-        $response =[
-            'status' => 'success',
-            'message' => 'Comment added successfully',
-            'data' => $item
-        ];
-        return response($response, 201);
     }
 
     /**

@@ -30,7 +30,7 @@ return new class extends Migration
             $table->unsignedBigInteger('views')->default(0);
 
             $table->unsignedBigInteger('type_id')->default(1);// upload|Live|vod
-            $table->unsignedBigInteger('category_id')->default(1);
+            // $table->unsignedBigInteger('category_id')->default(1);
             $table->unsignedBigInteger('visibility_id')->default(1); // Public|unlisted|private
             $table->boolean('is_recordable')->default(true);
             $table->boolean('is_streamable')->default(true);
