@@ -110,13 +110,13 @@ class TranscodeMedia implements ShouldQueue
         }
 
         // Update media record
-        // $media->update([
-        //     'media_status_id' => 2, // Ready
-        //     'hls_master' => "videos/processed/{$this->mediaId}/master.m3u8",
-        // ]);
-        $media->hls_master = "videos/processed/{$this->mediaId}/master.m3u8";
-        $media->media_status_id = 2;
-        $media->save();
+        $media->update([
+            'media_status_id' => 2, // Ready
+            'hls_master' => "videos/processed/{$this->mediaId}/master.m3u8",
+        ]);
+        // $media->hls_master = "videos/processed/{$this->mediaId}/master.m3u8";
+        // $media->media_status_id = 2;
+        // $media->save();
 
         Log::info("Successfully transcoded media ID: {$this->mediaId} with " . count($successfulRenditions) . " renditions");
 
