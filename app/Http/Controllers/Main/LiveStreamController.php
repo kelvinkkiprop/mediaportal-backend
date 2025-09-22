@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 // Add
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Models\Main\Media;
 
@@ -144,9 +145,11 @@ class LiveStreamController extends Controller
      * verify_called_by_nginx_on_publish
      */
     public function verify(Request $request) {
+
+        Log::info("Streaming started "+$request->all());
         // nginx passes stream name, etc. Validate the stream key
         $name = $request->get('name'); // stream key used by publisher
-        $item = Stream::where('stream_key', $name)->first();
+        $item = Media::where('stream_key', $name)->first();
         if (!$item){
             return response('Denied', 403);
         }
@@ -162,8 +165,9 @@ class LiveStreamController extends Controller
      * stop_called_by_nginx_on_stop
      */
     public function stop(Request $request) {
+        Log::error("Streaming ended "+$request->all());
         $name = $request->get('name');
-        $item = Stream::where('stream_key', $name)->first();
+        $item = Media::where('stream_key', $name)->first();
         if ($item) $item->update([
             'live_stream_status_id'=>4 //Ended
         ]);
