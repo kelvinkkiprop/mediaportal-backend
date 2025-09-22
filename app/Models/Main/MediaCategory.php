@@ -4,7 +4,7 @@ namespace App\Models\Main;
 
 use Illuminate\Database\Eloquent\Model;
 // Add
-use App\Models\Main\ContentCategory;
+use App\Models\Main\Category;
 use App\Models\Main\Media;
 
 class MediaCategory extends Model
@@ -39,7 +39,7 @@ class MediaCategory extends Model
         if(is_null($value)){
             return null;
         }else{
-            return ContentCategory::find($value)->name;
+            return Category::find($value)->name;
         }
     }
     public function getTotalMediaAttribute()
@@ -58,7 +58,7 @@ class MediaCategory extends Model
      */
     public function category()
     {
-        return $this->belongsTo(ContentCategory::class, 'category_id', 'id');
+        return $this->belongsTo(Category::class, 'category_id', 'id');
     }
 
     /**

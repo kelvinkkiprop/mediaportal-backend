@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Main\MediaCategory;
 use App\Models\Main\Media;
 
-class ContentCategory extends Model
+class Category extends Model
 {
     /**
      * UUIDs
@@ -81,3 +81,4 @@ class ContentCategory extends Model
     }
 
 }
+

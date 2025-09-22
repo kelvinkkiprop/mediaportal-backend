@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('content_statuses', function (Blueprint $table) {
-            $table->id();
+        Schema::create('categories', function (Blueprint $table) {
+            // $table->id();
+            $table->uuid('id')->primary();
             $table->string('name')->nullable();
             $table->string('alias')->nullable();
+            $table->longText('description')->nullable();
+            $table->string('thumbnail')->nullable();
+            $table->unsignedBigInteger('type_id')->default(1); //Global/Local
+            $table->unsignedBigInteger('status_id')->default(1);
             $table->timestamps();
         });
     }
@@ -24,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('content_statuses');
+        Schema::dropIfExists('categories');
     }
 };

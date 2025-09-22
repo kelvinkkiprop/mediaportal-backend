@@ -39,8 +39,8 @@ class UserController extends Controller
             'role_id' => 'required|integer',
             'password' => 'required|string',
 
-            'organization_category_id' => 'required|integer',
-            'organization_id' => 'required|integer',
+            'organization_category_id' => 'nullable|required_if:role_id,2,3|integer',
+            'organization_id' => 'nullable|required_if:role_id,2,3|string',
         ]);
 
         $mCurrentUser = auth()->user();
@@ -53,13 +53,11 @@ class UserController extends Controller
             'role_id' => $fields['role_id'],
             'password' => Hash::make($random_password),
             'remember_token' => Str::random(50),
-            'created_at'=>date('Y-m-d H:i:s'),
             // "email_verified_at"=>date("Y-m-d H:i:s"),
-            // 'status_id' => 2,
+            'status_id' => 2,
 
             'organization_category_id' => $fields['organization_category_id'],
             'organization_id' => $fields['organization_id'],
-            'account_type_id' => 2,
         ]);
 
          //Email
@@ -111,6 +109,9 @@ class UserController extends Controller
             'status_id' => 'required|integer',
             // 'password' => 'required|string',
             'reset_password' => 'required|boolean',
+
+            'organization_category_id' => 'nullable|required_if:role_id,2,3|integer',
+            'organization_id' => 'nullable|required_if:role_id,2,3|string',
         ]);
 
         $mCurrentUser = auth()->user();
@@ -120,8 +121,9 @@ class UserController extends Controller
             'email' => $fields['email'],
             'role_id' => $fields['role_id'],
             'status_id' => $fields['status_id'],
-            'remember_token' => Str::random(50),
-            'created_at'=>date('Y-m-d H:i:s'),
+
+            'organization_category_id' => $fields['organization_category_id'],
+            'organization_id' => $fields['organization_id'],
         ]);
 
         // $random_password = Str::random(6);
@@ -215,6 +217,7 @@ class UserController extends Controller
         $roles = Role::orderBy('id', 'asc')->get();
         $statuses = UserStatus::orderBy('name', 'asc')->get();
         $organization_categories = OrganizationCategory::orderBy('name', 'asc')->get();
+        $organizations = Organization::orderBy('name', 'asc')->get();
 
         $response =[
             'status' => 'success',
@@ -223,6 +226,7 @@ class UserController extends Controller
                 'roles' => $roles,
                 'statuses' => $statuses,
                 'organization_categories' => $organization_categories,
+                'organizations' => $organizations,
             ]
         ];
         return response($response, 201);

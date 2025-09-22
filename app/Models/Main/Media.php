@@ -10,7 +10,7 @@ use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
 use App\Models\Main\MediaStatus;
 use App\Models\Main\MediaCategory;
-use App\Models\Settings\ContentStatus;
+use App\Models\Settings\ApprovalStatus;
 
 class Media extends Model
 {
@@ -237,55 +237,12 @@ class Media extends Model
     }
 
     /**
-     * categories
+     * mediaCategories
      */
-    public function categories()
+    public function mediaCategories()
     {
         return $this->hasMany(MediaCategory::class, 'media_id', 'id');
     }
-
-    /**
-     * relatedMedia
-     */
-    // public function getRelatedMediaAttribute()
-    // {
-    // // Get all category IDs for the current media
-    // $categoryIds = $this->categories()->pluck('category_id');
-
-    // // Find other media that share any of those categories
-    // return Media::whereHas('categories', function ($query) use ($categoryIds) {
-    //     $query->whereIn('category_id', $categoryIds);
-    // })
-    // ->where('id', '!=', $this->id) // Exclude current media
-    // ->get();
-
-    // }
-
-    // public function relatedMedia()
-    // {
-    //     // Step 1: Get category IDs for the current media
-    //     $categoryIds = $this->categories()->pluck('category_id');
-
-    //     // Step 2: Find other media that share these categories
-    //     return Media::whereHas('categories', function ($query) use ($categoryIds) {
-    //         $query->whereIn('category_id', $categoryIds);
-    //     })
-    //     ->where('id', '!=', $this->id) // Exclude the current media
-    //     ->get();
-
-    //     return $this->categories->where('media_id', $this->id)->get();
-    //     // Get category IDs of this media
-    //     $categoryIds = $this->categories->pluck('category_id');
-    //     return $categoryIds;
-
-    //     // Query other media with at least one matching category
-    //     return Media::whereHas('categories', function($query) use ($categoryIds) {
-    //             $query->whereIn('category_id', $categoryIds);
-    //         })
-    //         ->where('id', '!=', $this->id) // exclude current media
-    //         ->get(); // fetch results as collection
-    // }
-
 
     /**
      * comments
@@ -329,7 +286,7 @@ class Media extends Model
      * status
      */
     public function status(){
-        return $this->hasOne(ContentStatus::class, 'id', 'status_id');
+        return $this->hasOne(ApprovalStatus::class, 'id', 'status_id');
     }
 
 }

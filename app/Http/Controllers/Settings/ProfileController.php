@@ -116,7 +116,8 @@ class ProfileController extends Controller
     public function update(Request $request, string $id)
     {
         $fields = $request->validate([
-            'phone' => 'required|numeric',
+            'bio' => 'required|string',
+            'phone' => 'required|string',
             'county_id' => 'required|integer',
             'constituency_id' => 'required|integer',
             'ward_id' => 'required|integer',
@@ -124,6 +125,7 @@ class ProfileController extends Controller
 
         $mCurrentUser = auth()->user();
         $item = User::where('id', $id)->update([
+            'bio' => $fields['bio'],
             'phone' => $fields['phone'],
             'county_id' => $fields['county_id'],
             'constituency_id' => $fields['constituency_id'],

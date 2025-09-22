@@ -4,7 +4,7 @@ namespace App\Models\Settings;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ContentStatus extends Model
+class ApprovalStatus extends Model
 {
     //
 }

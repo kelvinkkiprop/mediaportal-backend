@@ -5,18 +5,18 @@ namespace App\Http\Controllers\Main;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 // Add
-use App\Models\Main\ContentCategory;
+use App\Models\Main\Category;
 use App\Models\Main\MediaCategory;
 use App\Models\Main\Media;
 
-class ContentCategoryController extends Controller
+class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return ContentCategory::with(['mediaCategory'])->orderBy('name', 'asc')->paginate(10);
+        return Category::with(['mediaCategory'])->orderBy('name', 'asc')->paginate(10);
     }
 
     /**
@@ -28,7 +28,7 @@ class ContentCategoryController extends Controller
             'ttile' => 'required|string',
         ]);
 
-        $item = ContentCategory::create([
+        $item = Category::create([
             'name' => $fields['name'],
         ]);
 
@@ -46,7 +46,7 @@ class ContentCategoryController extends Controller
      */
     public function show(string $id)
     {
-        return ContentCategory::find($id);
+        return Category::find($id);
     }
 
     /**
@@ -58,7 +58,7 @@ class ContentCategoryController extends Controller
             'name' => 'required|string',
         ]);
 
-        $item = ContentCategory::where('id', $id)->update([
+        $item = Category::where('id', $id)->update([
             'name' => $fields['name'],
         ]);
 
@@ -74,7 +74,7 @@ class ContentCategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        $item = ContentCategory::find($id);
+        $item = Category::find($id);
         $item->delete();
 
         $response =[
@@ -95,7 +95,7 @@ class ContentCategoryController extends Controller
         ]);
 
         $term = $fields['search_term'];
-        $items = ContentCategory::where(function($query) use($term){
+        $items = Category::where(function($query) use($term){
             $query->where('name','LIKE','%'.$term.'%');
             $query->orWhere('alias','LIKE','%'.$term.'%');
         })->get();

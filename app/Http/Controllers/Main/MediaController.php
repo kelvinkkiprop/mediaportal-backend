@@ -15,11 +15,11 @@ use App\Models\Main\Media;
 use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
 use App\Models\Main\MediaHistory;
-use App\Models\Main\ContentCategory;
+use App\Models\Main\Category;
 use App\Models\Main\MediaCategory;
 use App\Models\Main\MediaType;
 use App\Models\Settings\Organization;
-use App\Models\Settings\ContentStatus;
+use App\Models\Settings\ApprovalStatus;
 
 class MediaController extends Controller
 {
@@ -91,7 +91,7 @@ class MediaController extends Controller
             }
 
         // return Media::find($id);
-        return Media::with(['user','categories'])->find($id);
+        return Media::with(['user','mediaCategories'])->find($id);
     }
 
     /**
@@ -204,10 +204,10 @@ class MediaController extends Controller
      */
     public function unpaginatedItems()
     {
-        $content_categories = ContentCategory::orderBy('name', 'asc')->get();
+        $content_categories = Category::orderBy('name', 'asc')->get();
         $organizations = Organization::orderBy('name', 'asc')->get();
         $media_types = MediaType::orderBy('name', 'asc')->get();
-        $content_status = ContentStatus::orderBy('name', 'asc')->get();
+        $content_status = ApprovalStatus::orderBy('name', 'asc')->get();
 
         $response =[
             'status' => 'success',

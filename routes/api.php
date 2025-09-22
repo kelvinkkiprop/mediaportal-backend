@@ -7,7 +7,7 @@ use App\Http\Controllers\Main\HomeController;
 use App\Http\Controllers\Main\AuthController;
 use App\Http\Controllers\Main\DashboardController;
 use App\Http\Controllers\Main\MediaController;
-use App\Http\Controllers\Main\ContentCategoryController;
+use App\Http\Controllers\Main\CategoryController;
 use App\Http\Controllers\Main\MediaTagController;
 use App\Http\Controllers\Main\LiveStreamController;
 use App\Http\Controllers\Main\MediaCommentController;
@@ -76,15 +76,15 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
 /*
 |--------------------------------------------------------------------------
-| ContentCategoryController
+| CategoryController
 |--------------------------------------------------------------------------
 */
 Route::group(['middleware' => ['auth:sanctum']], function() {
-    Route::resource('content-categories', ContentCategoryController::class);
-    Route::post('search-content-categories', [ContentCategoryController::class, 'searchItems']);
-    Route::get('unpaginated-items-content-categories', [ContentCategoryController::class, 'unpaginatedItems']);
+    Route::resource('categories', CategoryController::class);
+    Route::post('search-categories', [CategoryController::class, 'searchItems']);
+    Route::get('unpaginated-items-categories', [CategoryController::class, 'unpaginatedItems']);
 
-    Route::get('categorized-items-content-categories/{category_id}', [ContentCategoryController::class, 'categorizedMedia']);
+    Route::get('categorized-items-categories/{category_id}', [CategoryController::class, 'categorizedMedia']);
 });
 
 /*

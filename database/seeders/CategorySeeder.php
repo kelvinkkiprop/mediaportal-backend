@@ -6,9 +6,9 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 // Add
 use Illuminate\Support\Str;
-use App\Models\Main\ContentCategory;
+use App\Models\Main\Category;
 
-class ContentCategorySeeder extends Seeder
+class CategorySeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -33,6 +33,6 @@ class ContentCategorySeeder extends Seeder
             ['id'=>Str::uuid(), 'name'=>'Sports & Culture',    'alias'=>null, 'created_at'=>now()],
             ['id'=>Str::uuid(), 'name'=>'National Events',    'alias'=>null, 'created_at'=>now()],
         ];
-        ContentCategory::insert($items);
+        Category::insert($items);
     }
 }

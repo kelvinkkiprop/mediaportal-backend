@@ -30,6 +30,7 @@ php artisan make:controller Settings/ProfileMethodController --api --resource
 
 5.Models
 php artisan make:model Main/Media -m
+php artisan make:model Main/Category -m
 php artisan make:model Main/MediaCategory -m
 php artisan make:model Main/MediaTag -m
 php artisan make:model Main/MediaStatus -m
@@ -47,8 +48,8 @@ php artisan make:model Settings/UserStatus -m
 php artisan make:model Settings/PaymentStatus -m
 php artisan make:model Settings/OrganizationCategory -m
 php artisan make:model Settings/Organization -m
-php artisan make:model Settings/ContentCategory -m
-php artisan make:model Settings/ContentStatus -m
+php artisan make:model Settings/Category -m
+php artisan make:model Settings/ApprovalStatus -m
 php artisan make:model Other/County -m
 php artisan make:model Other/Constituency -m
 php artisan make:model Other/Ward -m

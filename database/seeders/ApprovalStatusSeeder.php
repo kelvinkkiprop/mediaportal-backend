@@ -5,9 +5,9 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 // Add
-use App\Models\Settings\ContentStatus;
+use App\Models\Settings\ApprovalStatus;
 
-class ContentStatusSeeder extends Seeder
+class ApprovalStatusSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,6 +20,6 @@ class ContentStatusSeeder extends Seeder
             ['id'=>2, 'name'=>'Published', 'alias'=>'Approve', 'created_at'=>now()],
             ['id'=>3, 'name'=>'Rejected', 'alias'=>'Reject', 'created_at'=>now()],
         ];
-        ContentStatus::insert($items);
+        ApprovalStatus::insert($items);
     }
 }
