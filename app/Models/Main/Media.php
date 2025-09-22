@@ -44,9 +44,9 @@ class Media extends Model
         'date_produced',
         'tags',
         'organization_id',
-        // 'src_path',
-        // 'hls_master',
-        // 'thumbnail_path',
+        'src_path',
+        'hls_master',
+        'thumbnail_path',
 
         'file_size',
         'mime_type',
