@@ -20,12 +20,16 @@ class MediaCategory extends Model
         'category_id',
     ];
 
-      /**
+
+    /**
     * appends
     */
     protected $appends = [
         'name',
+        'total_media',
     ];
+
+
 
 
     // GETTERS&SETTERS
@@ -36,6 +40,15 @@ class MediaCategory extends Model
             return null;
         }else{
             return ContentCategory::find($value)->name;
+        }
+    }
+    public function getTotalMediaAttribute()
+    {
+        $value = $this->media()->count();
+        if(is_null($value)){
+            return null;
+        }else{
+            return $value." Media";
         }
     }
 
@@ -51,15 +64,13 @@ class MediaCategory extends Model
     /**
      * media
      */
+    public function media()
+    {
+        return $this->belongsTo(Media::class, 'media_id', 'id');
+    }
     // public function media()
     // {
-    //     return $this->belongsTo(Media::class, 'media_id', 'id');
+    //     return $this->belongsToMany(Media::class, 'media_categories', 'category_id', 'media_id');
     // }
-
-public function media()
-{
-    return $this->belongsToMany(Media::class, 'media_categories', 'category_id', 'media_id');
-}
-
 
 }

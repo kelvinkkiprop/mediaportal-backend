@@ -83,6 +83,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::resource('content-categories', ContentCategoryController::class);
     Route::post('search-content-categories', [ContentCategoryController::class, 'searchItems']);
     Route::get('unpaginated-items-content-categories', [ContentCategoryController::class, 'unpaginatedItems']);
+
+    Route::get('categorized-items-content-categories/{category_id}', [ContentCategoryController::class, 'categorizedMedia']);
 });
 
 /*

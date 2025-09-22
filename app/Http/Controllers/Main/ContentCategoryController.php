@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 // Add
 use App\Models\Main\ContentCategory;
+use App\Models\Main\MediaCategory;
+use App\Models\Main\Media;
 
 class ContentCategoryController extends Controller
 {
@@ -104,6 +106,17 @@ class ContentCategoryController extends Controller
             'data' => $items
         ];
         return response($response, 201);
+    }
+
+
+
+    /**
+     * categorizedMedia
+     */
+    public function categorizedMedia(string $id)
+    {
+        return MediaCategory::with('media')->where('category_id', $id)->paginate(10);
+        // return Media::whereIn('id', $mediaIds)->orderBy('created_at', 'desc')->paginate(3);
     }
 
 }
