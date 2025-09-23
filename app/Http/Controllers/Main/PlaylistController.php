@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Main;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 // Add
-use Illuminate\Validation\Rule;
+use Laravel\Sanctum\PersonalAccessToken;
 use App\Models\Main\Playlist;
 use App\Models\Main\Type;
 use App\Models\Main\MediaPlaylist;
@@ -126,10 +126,19 @@ class PlaylistController extends Controller
     /**
      * unpaginatedItems
      */
-    public function unpaginatedItems()
+    public function unpaginatedItems(Request $request)
     {
         $mCurrentUser = auth()->user();
-        $playlists = Playlist::where('user_id', $mCurrentUser->id)->orderBy('name', 'asc')->get();
+         $mCurrentUser = null;
+         $playlists = null;
+        if ($request->bearerToken()) {
+            $accessToken = PersonalAccessToken::findToken($request->bearerToken());
+            if ($accessToken) {
+                $mCurrentUser = $accessToken->tokenable;
+                $playlists = Playlist::where('user_id', $mCurrentUser->id)->orderBy('name', 'asc')->get();
+            }
+        }
+        // $playlists = Playlist::where('user_id', $mCurrentUser->id)->orderBy('name', 'asc')->get();
         $types = Type::orderBy('name', 'asc')->get();
 
         $response =[

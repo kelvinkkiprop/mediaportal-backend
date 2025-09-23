@@ -96,10 +96,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 | PlaylistController
 |--------------------------------------------------------------------------
 */
+Route::get('unpaginated-items-playlists', [PlaylistController::class, 'unpaginatedItems']);
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::resource('playlists', PlaylistController::class);
     Route::post('search-playlists', [PlaylistController::class, 'searchItems']);
-    Route::get('unpaginated-items-playlists', [PlaylistController::class, 'unpaginatedItems']);
 
 
     Route::post('add-item-playlists', [PlaylistController::class, 'addItem']);
