@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media_types', function (Blueprint $table) {
-            $table->id();
+        Schema::create('playlists', function (Blueprint $table) {
+            // $table->id();
+            $table->uuid('id')->primary();
+            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('name')->nullable();
-            $table->string('alias')->nullable();
+            $table->longText('description')->nullable();
+            $table->unsignedBigInteger('type_id')->default(1);
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media_types');
+        Schema::dropIfExists('playlists');
     }
 };

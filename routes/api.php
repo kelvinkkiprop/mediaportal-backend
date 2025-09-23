@@ -8,7 +8,7 @@ use App\Http\Controllers\Main\AuthController;
 use App\Http\Controllers\Main\DashboardController;
 use App\Http\Controllers\Main\MediaController;
 use App\Http\Controllers\Main\CategoryController;
-use App\Http\Controllers\Main\MediaTagController;
+use App\Http\Controllers\Main\PlaylistController;
 use App\Http\Controllers\Main\LiveStreamController;
 use App\Http\Controllers\Main\MediaCommentController;
 // Manage
@@ -71,7 +71,11 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('search-users', [UserController::class, 'searchItems']);
     Route::get('unpaginated-items-users', [UserController::class, 'unpaginatedItems']);
 
-    Route::get('filter-organizations/{category_id}', [UserController::class, 'filterOrganizations']);
+    Route::get('filter-organizations-users/{category_id}', [UserController::class, 'filterOrganizations']);
+
+    Route::get('analytics-users/{id}', [UserController::class, 'analyticsItems']);
+    Route::get('media-users/{id}', [UserController::class, 'mediaItems']);
+    Route::get('playlist-users/{id}', [UserController::class, 'playlistItems']);
 });
 
 /*
@@ -89,13 +93,17 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 
 /*
 |--------------------------------------------------------------------------
-| MediaTagController
+| PlaylistController
 |--------------------------------------------------------------------------
 */
 Route::group(['middleware' => ['auth:sanctum']], function() {
-    Route::resource('media-tags', MediaTagController::class);
-    Route::post('search-media-tags', [MediaTagController::class, 'searchItems']);
-    Route::get('unpaginated-items-media-tags', [MediaTagController::class, 'unpaginatedItems']);
+    Route::resource('playlists', PlaylistController::class);
+    Route::post('search-playlists', [PlaylistController::class, 'searchItems']);
+    Route::get('unpaginated-items-playlists', [PlaylistController::class, 'unpaginatedItems']);
+
+
+    Route::post('add-item-playlists', [PlaylistController::class, 'addItem']);
+    Route::post('remove-item-playlists', [PlaylistController::class, 'removeItem']);
 });
 
 /*

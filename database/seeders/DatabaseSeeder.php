@@ -30,11 +30,12 @@ class DatabaseSeeder extends Seeder
             OrganizationCategorySeeder::class,
             OrganizationSeeder::class,
             CategorySeeder::class,
-            MediaTypeSeeder::class,
+            TypeSeeder::class,
             MediaLiveStreamSeeder::class,
             MediaStatusSeeder::class,
             LiveStreamStatusSeeder::class,
             ApprovalStatusSeeder::class,
+            PlaylistSeeder::class,
         ]);
 
 

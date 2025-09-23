@@ -10,6 +10,7 @@ use App\Models\Main\MediaReaction;
 use App\Models\Main\MediaComment;
 use App\Models\Main\MediaStatus;
 use App\Models\Main\MediaCategory;
+use App\Models\Main\MediaPlaylist;
 use App\Models\Settings\ApprovalStatus;
 
 class Media extends Model
@@ -242,6 +243,14 @@ class Media extends Model
     public function mediaCategories()
     {
         return $this->hasMany(MediaCategory::class, 'media_id', 'id');
+    }
+
+    /**
+     * mediaPlaylists
+     */
+    public function mediaPlaylists()
+    {
+        return $this->hasMany(MediaPlaylist::class, 'media_id', 'id');
     }
 
     /**

@@ -5,9 +5,9 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 // Add
-use App\Models\Main\MediaType;
+use App\Models\Main\Type;
 
-class MediaTypeSeeder extends Seeder
+class TypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,6 +20,6 @@ class MediaTypeSeeder extends Seeder
             ['id'=>2, 'name'=>'Unlisted', 'alias'=>null, 'created_at'=>now()],
             ['id'=>3, 'name'=>'Private', 'alias'=>null, 'created_at'=>now()],
         ];
-        MediaType::insert($items);
+        Type::insert($items);
     }
 }

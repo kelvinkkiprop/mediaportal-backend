@@ -17,7 +17,7 @@ use App\Models\Main\MediaComment;
 use App\Models\Main\MediaHistory;
 use App\Models\Main\Category;
 use App\Models\Main\MediaCategory;
-use App\Models\Main\MediaType;
+use App\Models\Main\Type;
 use App\Models\Settings\Organization;
 use App\Models\Settings\ApprovalStatus;
 
@@ -91,7 +91,7 @@ class MediaController extends Controller
             }
 
         // return Media::find($id);
-        return Media::with(['user','mediaCategories'])->find($id);
+        return Media::with(['user','mediaCategories','mediaPlaylists'])->find($id);
     }
 
     /**
@@ -206,7 +206,7 @@ class MediaController extends Controller
     {
         $content_categories = Category::orderBy('name', 'asc')->get();
         $organizations = Organization::orderBy('name', 'asc')->get();
-        $media_types = MediaType::orderBy('name', 'asc')->get();
+        $media_types = Type::orderBy('name', 'asc')->get();
         $content_status = ApprovalStatus::orderBy('name', 'asc')->get();
 
         $response =[

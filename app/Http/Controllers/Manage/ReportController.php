@@ -149,4 +149,5 @@ class ReportController extends Controller
             'data' => $data
         ],201);
     }
+
 }

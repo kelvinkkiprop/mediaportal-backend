@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\Main\Media;
+use App\Models\Main\Playlist;
 use App\Models\Settings\Role;
 use App\Models\Settings\UserStatus;
 use App\Models\Settings\OrganizationCategory;
@@ -236,10 +238,99 @@ class UserController extends Controller
     /**
      * filterOrganizations
      */
-    public function filterOrganizations($category_id)
+    public function filterOrganizations(string $category_id)
     {
         return Organization::where('category_id', $category_id)->orderBy('name', 'asc')->get();
     }
 
+    /**
+     * analyticsItems
+     */
+    public function analyticsItems(string $id)
+    {
+        $my_total_media = Media::where('user_id', $id)->withCount(['likes', 'comments'])->get();
+        $my_total_views = Media::where('user_id', $id)->sum('views');
+        $my_total_likes = $my_total_media->sum('likes_count');
+        $my_total_comments = $my_total_media->sum('comments_count');
+        $my_total_memory = Media::where('user_id', $id)->sum('file_size');
+
+        $total_media = Media::withCount(['likes', 'comments'])->get();
+        $total_views = Media::sum('views');
+        $total_likes = $total_media->sum('likes_count');
+        $total_comments = $total_media->sum('comments_count');
+        $total_memory = Media::sum('file_size');
+
+        $total_memory_percentage  = $my_total_memory> 0 ? ($my_total_memory/$total_memory)*100 : 0;
+        $total_media_percentage   = $my_total_media->count()> 0 ? ($my_total_media->count()/$total_media->count())*100 : 0;
+        $total_comments_percentage= $my_total_likes> 0 ? ($my_total_likes/$total_likes)*100 : 0;
+        $total_likes_percentage   = $my_total_comments> 0 ? ($my_total_comments/$total_comments)*100 : 0;
+        $total_views_percentage   = $my_total_views> 0 ? ($my_total_views/$total_views)*100 : 0;
+
+        $mYear = date('Y');
+        $allMedia = Media::where('user_id',$id)->whereYear('created_at', $mYear)->withCount(['likes', 'comments'])->get()->groupBy(function ($media) {
+            // Group_by_month_number(1–12)
+            return (int) date('n', strtotime($media->created_at));
+        });
+        $months = [
+            1 => 'jan', 2 => 'feb', 3 => 'march', 4 => 'april', 5 => 'may', 6 => 'june', 7 => 'july', 8 => 'aug', 9 => 'sept', 10 => 'oct', 11 => 'nov', 12 => 'dec',
+        ];
+        $media_per_month = $views_per_month = $likes_per_month = $comments_per_month = [];
+        foreach ($months as $num => $key) {
+            $collection = $allMedia[$num] ?? collect();
+            $media_per_month[$key]    = $collection->count();
+            $views_per_month[$key]    = $collection->sum('views');
+            $likes_per_month[$key]    = $collection->sum('likes_count');
+            $comments_per_month[$key] = $collection->sum('comments_count');
+        }
+
+        $data = [
+            'my_total_views'   => $my_total_views,
+            'my_total_media'   => $my_total_media->count(),
+            'my_total_likes'   => $my_total_likes,
+            'my_total_comments' => $my_total_comments,
+            'my_total_memory' => $my_total_memory,
+
+            'total_views'   => $total_views,
+            'total_media'   => $total_media->count(),
+            'total_likes'   => $total_likes,
+            'total_comments' => $total_comments,
+            'total_memory' => $total_memory,
+
+            'total_memory_percentage'   => $total_memory_percentage,
+            'total_media_percentage'   => $total_media_percentage,
+            'total_likes_percentage'   => $total_likes_percentage,
+            'total_comments_percentage'=> $total_comments_percentage,
+            'total_views_percentage'=> $total_views_percentage,
+
+            'media_per_month'=> $media_per_month,
+            'views_per_month'=> $views_per_month,
+            'likes_per_month'=> $likes_per_month,
+            'comments_per_month'=> $comments_per_month,
+        ];
+        $response =[
+            'status' => 'success',
+            'message' => 'Data retrieved successfully',
+            'data' => $data
+        ];
+        return response($response, 201);
+    }
+
+    /**
+     * mediaItems
+     */
+    public function mediaItems(string $id){
+        return Media::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
+    }
+
+    /**
+     * playlistItems
+     */
+    public function playlistItems(string $id){
+        $mCurrentUser = auth()->user();
+        if($mCurrentUser->id != $id){
+            return Playlist::with('mediaPlaylist')->where('user_id', $id)->where('type_id', 1)->orderBy('created_at', 'desc')->paginate(10);
+        }
+        return Playlist::with('mediaPlaylist')->where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
+    }
 
 }

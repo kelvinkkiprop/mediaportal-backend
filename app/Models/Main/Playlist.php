@@ -5,9 +5,12 @@ namespace App\Models\Main;
 use Illuminate\Database\Eloquent\Model;
 // Add
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\Main\Type;
 
-class MediaTag extends Model
+class Playlist extends Model
 {
+
     /**
      * UUIDs
      */
@@ -24,7 +27,6 @@ class MediaTag extends Model
         });
     }
 
-
     /**
      * The attributes that are mass assignable.
      *
@@ -32,29 +34,64 @@ class MediaTag extends Model
      */
     protected $fillable = [
         'id',
+        'user_id',
         'name',
-        'alias',
-        'status_id',
+        'description',
+        'type_id'
     ];
 
 
-    /**
+        /**
     * appends
     */
     protected $appends = [
         'thumbnail_url',
+        'total_media',
     ];
 
-    // getThumbnailUrlAttribute
+
+
+   // GETTERS&SETTERS
     public function getThumbnailUrlAttribute()
     {
-        $value = $this->id;
+        $value = $this->mediaPlaylist()->inRandomOrder()->first();
         if(is_null($value)){
             return null;
         }else{
             $path = config('app.asset_url').config('app.paths.file_download');
-            return $path.$value."/thumbnail.jpg";
+            return $path.$value->media_id."/thumbnail.jpg";
         }
     }
+    public function getTotalMediaAttribute()
+    {
+        return $this->mediaPlaylist()->count();
+    }
+
+
+    /**
+     * user
+     */
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id', 'id')->select(['user_id','first_name','last_name']);
+    }
+
+    /**
+     * type
+     */
+    public function type()
+    {
+        return $this->belongsTo(Type::class, 'type_id', 'id');
+    }
+
+
+
+    /**
+     * mediaPlaylist
+     */
+    public function mediaPlaylist()
+    {
+        return $this->hasMany(MediaPlaylist::class, 'user_id', 'user_id');
+    }
+
 
 }

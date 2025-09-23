@@ -59,6 +59,11 @@ class Category extends Model
             return $path.$value->media_id."/thumbnail.jpg";
         }
     }
+    public function getTotalMediaAttribute()
+    {
+        return $this->mediaCategory()->count();
+    }
+
 
 
 
@@ -69,15 +74,6 @@ class Category extends Model
     {
         return $this->hasMany(MediaCategory::class, 'category_id', 'id');
         // return $this->belongsTo(MediaCategory::class, 'category_id', 'id');
-    }
-
-
-    /**
-     * getTotalMediaAttribute
-     */
-    public function getTotalMediaAttribute()
-    {
-        return $this->mediaCategory()->count();
     }
 
 }
