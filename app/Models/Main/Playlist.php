@@ -73,7 +73,7 @@ class Playlist extends Model
      * user
      */
     public function user(){
-        return $this->belongsTo(User::class, 'user_id', 'id')->select(['user_id','first_name','last_name']);
+        return $this->belongsTo(User::class, 'user_id', 'id')->select(['id','first_name','last_name']);
     }
 
     /**
