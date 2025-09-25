@@ -215,9 +215,9 @@ class MediaController extends Controller
         if($mCurrentUser->role_id==1){ // Super
             $users = User::orderBy('name', 'asc')->get();
         }elseif($mCurrentUser->role_id==2){ // Admin
-            $users = User::where('account_type_id', 2)->orderBy('name', 'asc')->get();
+            $users = User::where('account_type_id', 2)->orderBy('first_name', 'asc')->get();
         } else{
-            $users = User::where('id', $mCurrentUser->id)->orderBy('name', 'asc')->get();
+            $users = User::where('id', $mCurrentUser->id)->orderBy('first_name', 'asc')->get();
         }
 
         $response =[
