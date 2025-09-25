@@ -44,7 +44,6 @@ class Media extends Model
         'description',
         'date_produced',
         'tags',
-        'organization_id',
         'src_path',
         'hls_master',
         'thumbnail_path',
@@ -166,7 +165,7 @@ class Media extends Model
     {
         // return $this->created_at ? $this->created_at->diffForHumans() : null;
         return $this->created_at ? $this->created_at->diffForHumans([
-            'short' => false,
+            'short' => true,
             'parts' => 1,     // show_1_only_e.g._5s
         ]) : null;
     }

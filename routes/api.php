@@ -113,6 +113,8 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 */
 Route::get('media/{media}', [MediaController::class, 'show'])->name('media.show');
 Route::get('related-media/{id}', [MediaController::class, 'relatedMedia']);
+Route::get('/media/{id}/playlist', [MediaController::class, 'playlistMedia']);
+Route::get('/media/{id}/category', [MediaController::class, 'categoryMedia']);
 Route::middleware('auth:sanctum')->group(function () {
     // Route::resource('media', MediaController::class);
     Route::resource('media', MediaController::class)->except(['show']);

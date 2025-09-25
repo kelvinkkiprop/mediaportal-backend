@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             UserStatusSeeder::class,
             RoleSeeder::class,
+            AccountTypeSeeder::class,
             CountySeeder::class,
             ConstituencySeeder::class,
             WardSeeder::class,

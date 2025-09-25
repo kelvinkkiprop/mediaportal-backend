@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
 use App\Models\Settings\Role;
+use App\Models\Settings\AccountType;
 use App\Models\Settings\UserStatus;
 use App\Models\Other\County;
 
@@ -168,6 +169,13 @@ class User extends Authenticatable
      */
     public function county(){
         return $this->hasOne(County::class, 'id', 'county_id');
+    }
+
+    /**
+     * type
+     */
+    public function type(){
+        return $this->hasOne(AccountType::class, 'id', 'account_type_id');
     }
 
     /**

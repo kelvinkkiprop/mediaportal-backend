@@ -66,7 +66,6 @@ class Category extends Model
 
 
 
-
     /**
      * mediaCategory
      */
@@ -75,6 +74,7 @@ class Category extends Model
         return $this->hasMany(MediaCategory::class, 'category_id', 'id');
         // return $this->belongsTo(MediaCategory::class, 'category_id', 'id');
     }
+
 
 }
 

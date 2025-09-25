@@ -11,14 +11,15 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Jobs\TranscodeMedia;
+use App\Models\User;
 use App\Models\Main\Media;
 use App\Models\Main\MediaReaction;
-use App\Models\Main\MediaComment;
 use App\Models\Main\MediaHistory;
+use App\Models\Main\MediaPlaylist;
+use App\Models\Main\Playlist;
 use App\Models\Main\Category;
 use App\Models\Main\MediaCategory;
 use App\Models\Main\Type;
-use App\Models\Settings\Organization;
 use App\Models\Settings\ApprovalStatus;
 
 class MediaController extends Controller
@@ -28,7 +29,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        return Media::with('status')->orderBy('created_at', 'desc')->paginate(10);
+        return Media::with(['user','status', 'mediaStatus', 'mediaCategories'])->orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**
@@ -106,7 +107,7 @@ class MediaController extends Controller
             'category_id' => 'required|array',
             'date_produced' => 'required|date',
             'tags' => 'required|string',
-            'organization_id' => 'required|string',
+            'user_id' => 'required|string',
             'allow_comments' => 'required|boolean',
         ]);
 
@@ -119,7 +120,7 @@ class MediaController extends Controller
             // 'category_id' => $fields['category_id'],
             'date_produced' => $fields['date_produced'],
             'tags' => $fields['tags'],
-            'organization_id' => $fields['organization_id'],
+            'user_id' => $fields['user_id'],
             'allow_comments' => $fields['allow_comments'],
         ]);
 
@@ -204,19 +205,30 @@ class MediaController extends Controller
      */
     public function unpaginatedItems()
     {
+
+        $mCurrentUser = auth()->user();
         $content_categories = Category::orderBy('name', 'asc')->get();
-        $organizations = Organization::orderBy('name', 'asc')->get();
         $media_types = Type::orderBy('name', 'asc')->get();
-        $content_status = ApprovalStatus::orderBy('name', 'asc')->get();
+        $media_playlists = MediaPlaylist::orderBy('name', 'asc')->get();
+        $approval_status = ApprovalStatus::orderBy('name', 'asc')->get();
+        $users = null;
+        if($mCurrentUser->role_id==1){ // Super
+            $users = User::orderBy('name', 'asc')->get();
+        }elseif($mCurrentUser->role_id==2){ // Admin
+            $users = User::where('organization_id', $mCurrentUser->organization_id)->orderBy('name', 'asc')->get();
+        } else{
+            $users = User::where('id', $mCurrentUser->id)->orderBy('name', 'asc')->get();
+        }
 
         $response =[
             'status' => 'success',
             'message' => 'Data retrieved successfully',
             'data' => [
                 'content_categories' => $content_categories,
-                'organizations' => $organizations,
+                'users' => $users,
                 'media_types' => $media_types,
-                'content_status' => $content_status,
+                'media_playlists' => $media_playlists,
+                'approval_status' => $approval_status,
             ]
         ];
         return response($response, 201);
@@ -235,7 +247,7 @@ class MediaController extends Controller
         $categoryIds = MediaCategory::where('media_id', $id)->pluck('category_id');
         // Find_related_media_less_original
         $relatedMediaIds = MediaCategory::whereIn('category_id', $categoryIds)->where('media_id', '!=', $id)->pluck('media_id');
-        // return Media::whereIn('id', $relatedMediaIds)->orderBy('created_at', 'desc')->paginate(3);
+        // return Media::orderBy('created_at', 'desc')->paginate(3);
         return Media::whereIn('id', $relatedMediaIds)->inRandomOrder()->paginate(3);
     }
 
@@ -339,7 +351,8 @@ class MediaController extends Controller
      */
     public function likedMedia()
     {
-        return MediaReaction::with(['media','media.user'])->where('type_id',1)->orderBy('created_at', 'desc')->paginate(10);
+        $mCurrentUser = auth()->user();
+        return MediaReaction::with(['media','media.user'])->where('user_id', $mCurrentUser->id)->where('type_id',1)->orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**
@@ -347,7 +360,8 @@ class MediaController extends Controller
      */
     public function historyMedia()
     {
-        return MediaHistory::with(['media','media.user'])->orderBy('created_at', 'desc')->paginate(10);
+        $mCurrentUser = auth()->user();
+        return MediaHistory::with(['media','media.user'])->where('user_id', $mCurrentUser->id)->orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**
@@ -370,6 +384,32 @@ class MediaController extends Controller
             'data' => $item
         ],201);
     }
+
+
+
+
+
+
+    /**
+     * playlistMedia
+     */
+    public function playlistMedia(string $id)
+    {
+        return Playlist::with(['user','mediaPlaylist','mediaPlaylist.media'])->find($id);
+        // return MediaPlaylist::with(['user','playlist','media'])->orderBy('created_at', 'desc')->get();
+    }
+
+
+    /**
+     * category
+     */
+    public function categoryMedia(string $id)
+    {
+        return Category::with(['mediaCategory','mediaCategory.media'])->find($id);
+        // return MediaPlaylist::with(['user','playlist','media'])->orderBy('created_at', 'desc')->get();
+    }
+
+
 
 
 

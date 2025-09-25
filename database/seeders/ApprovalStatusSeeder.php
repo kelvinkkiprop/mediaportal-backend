@@ -19,6 +19,7 @@ class ApprovalStatusSeeder extends Seeder
             ['id'=>1, 'name'=>'Under Review', 'alias'=>"Pending Review", 'created_at'=>now()],
             ['id'=>2, 'name'=>'Published', 'alias'=>'Approve', 'created_at'=>now()],
             ['id'=>3, 'name'=>'Rejected', 'alias'=>'Reject', 'created_at'=>now()],
+            ['id'=>4, 'name'=>'Blocked', 'alias'=>'Block', 'created_at'=>now()],
         ];
         ApprovalStatus::insert($items);
     }

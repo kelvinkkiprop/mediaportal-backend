@@ -17,7 +17,7 @@ class PlaylistController extends Controller
      */
     public function index()
     {
-        return MediaPlaylist::orderBy('created_at', 'desc')->paginate(10);
+        return Playlist::orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**

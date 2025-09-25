@@ -41,7 +41,8 @@ class Playlist extends Model
     ];
 
 
-        /**
+
+    /**
     * appends
     */
     protected $appends = [
@@ -90,7 +91,7 @@ class Playlist extends Model
      */
     public function mediaPlaylist()
     {
-        return $this->hasMany(MediaPlaylist::class, 'user_id', 'user_id');
+        return $this->hasMany(MediaPlaylist::class, 'playlist_id', 'id');
     }
 
 

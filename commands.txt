@@ -46,6 +46,7 @@ php artisan make:model Main/SpecialityUser -m
 php artisan make:model Main/Payment -m
 php artisan make:model Settings/Role -m
 php artisan make:model Settings/UserStatus -m
+php artisan make:model Settings/AccountType -m
 php artisan make:model Settings/PaymentStatus -m
 php artisan make:model Settings/OrganizationCategory -m
 php artisan make:model Settings/Organization -m
@@ -190,9 +191,9 @@ chown -R www-data:www-data /var/www/html/mediaportal-backend/storage
 sudo chmod -R 775 /var/www/html/mediaportal-backend/
 chmod -R 775 /var/www/html/mediaportal-backend/storage
 php artisan storage:link
-sudo php artisan config:clear
-sudo php artisan cache:clear
-sudo php artisan config:cache
+php artisan config:clear
+php artisan cache:clear
+php artisan config:cache
 
 4. Reference
 https://technoracle.com/install-laravel-on-ubuntu-22-04/

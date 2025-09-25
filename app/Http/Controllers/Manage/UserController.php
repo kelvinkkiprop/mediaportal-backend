@@ -12,6 +12,7 @@ use App\Models\Main\Media;
 use App\Models\Main\Playlist;
 use App\Models\Settings\Role;
 use App\Models\Settings\UserStatus;
+use App\Models\Settings\AccountType;
 use App\Models\Settings\OrganizationCategory;
 use App\Models\Settings\Organization;
 // Notifications
@@ -26,7 +27,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return User::orderBy('created_at', 'desc')->with(['role','status'])->paginate(10);
+        return User::orderBy('created_at', 'desc')->with(['role','status','type'])->paginate(10);
     }
 
     /**
@@ -39,10 +40,11 @@ class UserController extends Controller
             'last_name' => 'required|string',
             'email' => 'required|string|unique:users,email',
             'role_id' => 'required|integer',
+            'account_type_id' => 'required|integer',
             'password' => 'required|string',
 
-            'organization_category_id' => 'nullable|required_if:role_id,2,3|integer',
-            'organization_id' => 'nullable|required_if:role_id,2,3|string',
+            // 'organization_category_id' => 'nullable|required_if:account_type_id,2|integer',
+            // 'organization_id' => 'nullable|required_if:account_type_id,2|string',
         ]);
 
         $mCurrentUser = auth()->user();
@@ -53,13 +55,14 @@ class UserController extends Controller
             'last_name' => $fields['last_name'],
             'email' => $fields['email'],
             'role_id' => $fields['role_id'],
+            'account_type_id' => $fields['account_type_id'],
             'password' => Hash::make($random_password),
             'remember_token' => Str::random(50),
-            // "email_verified_at"=>date("Y-m-d H:i:s"),
+            "email_verified_at" => now(),
             'status_id' => 2,
 
-            'organization_category_id' => $fields['organization_category_id'],
-            'organization_id' => $fields['organization_id'],
+            // 'organization_category_id' => $fields['organization_category_id'],
+            // 'organization_id' => $fields['organization_id'],
         ]);
 
          //Email
@@ -109,11 +112,12 @@ class UserController extends Controller
             'email' => 'required|string|unique:users,email,'.$id,
             'role_id' => 'required|integer',
             'status_id' => 'required|integer',
+            'account_type_id' => 'required|integer',
             // 'password' => 'required|string',
             'reset_password' => 'required|boolean',
 
-            'organization_category_id' => 'nullable|required_if:role_id,2,3|integer',
-            'organization_id' => 'nullable|required_if:role_id,2,3|string',
+            // 'organization_category_id' => 'nullable|required_if:account_type_id,2|integer',
+            // 'organization_id' => 'nullable|required_if:account_type_id,2|string'
         ]);
 
         $mCurrentUser = auth()->user();
@@ -123,9 +127,10 @@ class UserController extends Controller
             'email' => $fields['email'],
             'role_id' => $fields['role_id'],
             'status_id' => $fields['status_id'],
+            'account_type_id' => $fields['account_type_id'],
 
-            'organization_category_id' => $fields['organization_category_id'],
-            'organization_id' => $fields['organization_id'],
+            // 'organization_category_id' => $fields['organization_category_id'],
+            // 'organization_id' => $fields['organization_id'],
         ]);
 
         // $random_password = Str::random(6);
@@ -218,6 +223,7 @@ class UserController extends Controller
     {
         $roles = Role::orderBy('id', 'asc')->get();
         $statuses = UserStatus::orderBy('name', 'asc')->get();
+        $account_types = AccountType::orderBy('name', 'asc')->get();
         $organization_categories = OrganizationCategory::orderBy('name', 'asc')->get();
         $organizations = Organization::orderBy('name', 'asc')->get();
 
@@ -227,6 +233,7 @@ class UserController extends Controller
             'data' => [
                 'roles' => $roles,
                 'statuses' => $statuses,
+                'account_types' => $account_types,
                 'organization_categories' => $organization_categories,
                 'organizations' => $organizations,
             ]
@@ -327,7 +334,7 @@ class UserController extends Controller
      */
     public function playlistItems(string $id){
         $mCurrentUser = auth()->user();
-        if($mCurrentUser->id != $id){
+        if($mCurrentUser->id != $id){ // Public
             return Playlist::with('mediaPlaylist')->where('user_id', $id)->where('type_id', 1)->orderBy('created_at', 'desc')->paginate(10);
         }
         return Playlist::with('mediaPlaylist')->where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);

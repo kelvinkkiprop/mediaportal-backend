@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreignUuid('playlist_id')->constrained('playlists')->cascadeOnDelete();
             $table->foreignUuid('media_id')->constrained('media')->cascadeOnDelete();
             $table->timestamps();
+
+            // composite_unique_constraint
+            $table->unique(['user_id', 'playlist_id', 'media_id']);
         });
     }
 
