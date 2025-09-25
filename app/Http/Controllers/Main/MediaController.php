@@ -209,7 +209,7 @@ class MediaController extends Controller
         $mCurrentUser = auth()->user();
         $content_categories = Category::orderBy('name', 'asc')->get();
         $media_types = Type::orderBy('name', 'asc')->get();
-        $media_playlists = MediaPlaylist::orderBy('name', 'asc')->get();
+        $media_playlists = MediaPlaylist::orderBy('created_at', 'desc')->get();
         $approval_status = ApprovalStatus::orderBy('name', 'asc')->get();
         $users = null;
         if($mCurrentUser->role_id==1){ // Super
