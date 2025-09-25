@@ -206,18 +206,28 @@ class MediaController extends Controller
     public function unpaginatedItems()
     {
 
-        $mCurrentUser = auth()->user();
+        // $mCurrentUser = auth()->user();
+        $mCurrentUser = null;
+        if ($request->bearerToken()) {
+            $accessToken = PersonalAccessToken::findToken($request->bearerToken());
+            if ($accessToken) {
+                $mCurrentUser = $accessToken->tokenable;
+            }
+        }
+
         $content_categories = Category::orderBy('name', 'asc')->get();
         $media_types = Type::orderBy('name', 'asc')->get();
         $media_playlists = MediaPlaylist::orderBy('created_at', 'desc')->get();
         $approval_status = ApprovalStatus::orderBy('name', 'asc')->get();
         $users = null;
-        if($mCurrentUser->role_id==1){ // Super
-            $users = User::orderBy('name', 'asc')->get();
-        }elseif($mCurrentUser->role_id==2){ // Admin
-            $users = User::where('account_type_id', 2)->orderBy('first_name', 'asc')->get();
-        } else{
-            $users = User::where('id', $mCurrentUser->id)->orderBy('first_name', 'asc')->get();
+        if ($mCurrentUser) {
+            if($mCurrentUser->role_id==1){ // Super
+                $users = User::orderBy('name', 'asc')->get();
+            }elseif($mCurrentUser->role_id==2){ // Admin
+                $users = User::where('account_type_id', 2)->orderBy('first_name', 'asc')->get();
+            } else{
+                $users = User::where('id', $mCurrentUser->id)->orderBy('first_name', 'asc')->get();
+            }
         }
 
         $response =[
