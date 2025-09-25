@@ -115,11 +115,12 @@ Route::get('media/{media}', [MediaController::class, 'show'])->name('media.show'
 Route::get('related-media/{id}', [MediaController::class, 'relatedMedia']);
 Route::get('/media/{id}/playlist', [MediaController::class, 'playlistMedia']);
 Route::get('/media/{id}/category', [MediaController::class, 'categoryMedia']);
+Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);
 Route::middleware('auth:sanctum')->group(function () {
     // Route::resource('media', MediaController::class);
     Route::resource('media', MediaController::class)->except(['show']);
     Route::post('search-media', [MediaController::class, 'searchItems']);
-    Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);
+    // Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);
 
     Route::get('my-media/{id}', [MediaController::class, 'myMedia']);
     Route::get('liked-media', [MediaController::class, 'likedMedia']);
