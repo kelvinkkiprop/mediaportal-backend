@@ -203,7 +203,7 @@ class MediaController extends Controller
     /**
      * unpaginatedItems
      */
-    public function unpaginatedItems()
+    public function unpaginatedItems(Request $request)
     {
 
         // $mCurrentUser = auth()->user();
