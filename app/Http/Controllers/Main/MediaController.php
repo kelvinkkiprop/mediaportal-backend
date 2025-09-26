@@ -29,7 +29,7 @@ class MediaController extends Controller
      */
     public function index()
     {
-        return Media::with(['user','status', 'mediaStatus', 'mediaCategories'])->orderBy('created_at', 'desc')->paginate(10);
+        return Media::with(['user','status','mediaStatus','mediaType','mediaCategories'])->orderBy('created_at', 'desc')->paginate(10);
     }
 
     /**
@@ -187,9 +187,9 @@ class MediaController extends Controller
         ]);
 
         $term = $fields['search_term'];
-        $items = Media::where(function($query) use($term){
-            $query->where('name','LIKE','%'.$term.'%');
-            $query->orWhere('alias','LIKE','%'.$term.'%');
+        $items = Media::with(['user','status','mediaStatus','mediaType','mediaCategories'])->where(function($query) use($term){
+            $query->where('title','LIKE','%'.$term.'%');
+            $query->orWhere('description','LIKE','%'.$term.'%');
         })->get();
 
         $response =[

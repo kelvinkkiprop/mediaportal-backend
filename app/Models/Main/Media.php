@@ -11,6 +11,7 @@ use App\Models\Main\MediaComment;
 use App\Models\Main\MediaStatus;
 use App\Models\Main\MediaCategory;
 use App\Models\Main\MediaPlaylist;
+use App\Models\Main\MediaType;
 use App\Models\Settings\ApprovalStatus;
 
 class Media extends Model
@@ -242,6 +243,13 @@ class Media extends Model
     public function mediaCategories()
     {
         return $this->hasMany(MediaCategory::class, 'media_id', 'id');
+    }
+    /**
+     * mediaType
+     */
+    public function mediaType()
+    {
+        return $this->hasOne(MediaType::class, 'id', 'type_id');
     }
 
     /**
