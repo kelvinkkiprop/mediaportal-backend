@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignUuid('media_id')->constrained('media')->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('device_type_id')->constrained('device_types')->cascadeOnDelete();
+            $table->unsignedBigInteger('device_type_id')->nullable();
             $table->timestamps();
         });
     }
