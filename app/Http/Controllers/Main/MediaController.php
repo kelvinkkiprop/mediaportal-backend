@@ -76,7 +76,7 @@ class MediaController extends Controller
             if ($mCurrentUser) {
                 $latestHistory = MediaHistory::where('media_id', $id)->where('user_id', $mCurrentUser->id)->latest()->first();
                 // $device = UserDevice::where('user_id', $mCurrentUser->id)->first();
-                $device = UserDevice::where('user_id', $mCurrentUser->id)->orderBy('last_login_at', 'desc')->first();
+                $device = UserDevice::where('user_id', $mCurrentUser->id)->orderBy('login_at', 'desc')->first();
                 if (!$latestHistory && $mCurrentUser) {
                     // no_previous_history
                     MediaHistory::create([
