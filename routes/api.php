@@ -46,10 +46,10 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 | DashboardController
 |--------------------------------------------------------------------------
 */
+Route::get('dashboard2', [DashboardController::class, 'index2']);
+Route::get('search-suggestions', [DashboardController::class, 'searchSuggestions']);
 Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('dashboard', [DashboardController::class, 'index']);
-    Route::get('dashboard2', [DashboardController::class, 'index2']);
-    Route::get('search-suggestions', [DashboardController::class, 'searchSuggestions']);
     Route::get('system-stats', [DashboardController::class, 'systemStats']);
 });
 
