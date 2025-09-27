@@ -46,11 +46,12 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
 | DashboardController
 |--------------------------------------------------------------------------
 */
-// Route::group(['middleware' => ['auth:sanctum']], function() {
+Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::get('dashboard', [DashboardController::class, 'index']);
     Route::get('dashboard2', [DashboardController::class, 'index2']);
     Route::get('search-suggestions', [DashboardController::class, 'searchSuggestions']);
-// });
+    Route::get('system-stats', [DashboardController::class, 'systemStats']);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -71,11 +72,13 @@ Route::group(['middleware' => ['auth:sanctum']], function() {
     Route::post('search-users', [UserController::class, 'searchItems']);
     Route::get('unpaginated-items-users', [UserController::class, 'unpaginatedItems']);
 
-    Route::get('filter-organizations-users/{category_id}', [UserController::class, 'filterOrganizations']);
+    Route::get('filter-institutions-users/{category_id}', [UserController::class, 'filterOrganizations']);
 
     Route::get('analytics-users/{id}', [UserController::class, 'analyticsItems']);
     Route::get('media-users/{id}', [UserController::class, 'mediaItems']);
     Route::get('playlist-users/{id}', [UserController::class, 'playlistItems']);
+
+    Route::get('entity-users', [UserController::class, 'entityItems']);
 });
 
 /*
@@ -115,6 +118,7 @@ Route::get('media/{media}', [MediaController::class, 'show'])->name('media.show'
 Route::get('related-media/{id}', [MediaController::class, 'relatedMedia']);
 Route::get('/media/{id}/playlist', [MediaController::class, 'playlistMedia']);
 Route::get('/media/{id}/category', [MediaController::class, 'categoryMedia']);
+Route::get('/media/{id}/entity', [MediaController::class, 'entityMedia']);
 Route::get('unpaginated-items-media', [MediaController::class, 'unpaginatedItems']);
 Route::middleware('auth:sanctum')->group(function () {
     // Route::resource('media', MediaController::class);

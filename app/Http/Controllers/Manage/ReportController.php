@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Main\Media;
-use App\Models\Main\Organization;
-use App\Models\Main\Payment;
+use App\Models\Main\MediaHistory;
 
 class ReportController extends Controller
 {
@@ -18,7 +17,23 @@ class ReportController extends Controller
      */
     public function index()
     {
-        //
+        $viewsByUser = Media::with('user')->select('user_id', DB::raw('SUM(views) as user_total_views'))->groupBy('user_id')->get();
+        $mViewsByDeviceType = MediaHistory::with('deviceType')->select('device_type_id', DB::raw('COUNT(*) as total'))->groupBy('device_type_id')->get();
+        $mUsersByStatus = User::with('status')->select('status_id', DB::raw('COUNT(*) as total'))->groupBy('status_id')->get();
+        $mediaByStatus = Media::with('status')->select('status_id', DB::raw('COUNT(*) as total'))->groupBy('status_id')->get();
+        $data = [
+            'views_by_user' => $viewsByUser,
+            'views_by_device_type' => $mViewsByDeviceType,
+            'users_by_status' => $mUsersByStatus,
+            'media_by_status' => $mediaByStatus,
+        ];
+
+        return response([
+            'status' => 'success',
+            'message' => 'Data retrieved successfully',
+            'data' => $data
+        ],201);
+
     }
 
     /**
@@ -138,7 +153,7 @@ class ReportController extends Controller
             'total_users'       => User::count(),
             'total_media'       => Media::count(),
             'total_payments'    => Payment::where('status_id', 2)->sum('amount'),
-            'total_organization'=> Organization::count(),
+            'total_organization'=> Institution::count(),
             'recent_users'      => User::with(['role','status','interests'])->orderBy('created_at', 'desc')->get()->take(5),
             'top_media'         => Media::with(['course'])->orderBy('views', 'desc')->take(5)->get(),
         ];

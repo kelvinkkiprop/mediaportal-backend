@@ -17,7 +17,7 @@ class AccountTypeSeeder extends Seeder
         // Default
         $items = [
             ['id'=>1, 'name'=>'Individual', 'alias'=>null, 'created_at'=>now()],
-            ['id'=>2, 'name'=>'Organization', 'alias'=>null, 'created_at'=>now()],
+            ['id'=>2, 'name'=>'Institution', 'alias'=>null, 'created_at'=>now()],
         ];
         AccountType::insert($items);
     }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 // Add
 use App\Models\User;
 use App\Models\Main\Media;
+use App\Models\Settings\DeviceType;
 
 class MediaHistory extends Model
 {
@@ -18,6 +19,7 @@ class MediaHistory extends Model
         'id',
         'media_id',
         'user_id',
+        'device_type_id',
 
         'created_at',
         'updated_at'
@@ -37,5 +39,14 @@ class MediaHistory extends Model
     public function media(){
         return $this->belongsTo(Media::class, 'media_id', 'id')->select(['id','user_id','title','views','created_at']);
     }
+
+    /**
+     * deviceType
+     */
+    public function deviceType(){
+        return $this->belongsTo(DeviceType::class, 'device_type_id', 'id');
+    }
+
+
 
 }

@@ -54,8 +54,9 @@ class Media extends Model
 
         'user_id',
         'media_status_id',
-        'status_id',
         'views',
+        'status_id',
+        'reject_comments',
 
         'type_id',
         // 'category_id',
@@ -226,7 +227,7 @@ class Media extends Model
      */
     public function user()
     {
-        return $this->hasOne(User::class, 'id', 'user_id')->select(['id','first_name','last_name']);
+        return $this->hasOne(User::class, 'id', 'user_id')->select(['id','first_name','last_name','name']);
     }
 
     /**
@@ -236,6 +237,8 @@ class Media extends Model
     {
         return $this->hasMany(MediaReaction::class);
     }
+
+
 
     /**
      * mediaCategories

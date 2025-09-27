@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('organization_categories', function (Blueprint $table) {
+        Schema::create('user_devices', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('alias')->nullable();
+            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('device_type_id')->constrained('device_types')->cascadeOnDelete();
+            $table->string('ip_address')->nullable();
+            $table->timestamp('login_at')->useCurrent();
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('organization_categories');
+        Schema::dropIfExists('user_devices');
     }
 };

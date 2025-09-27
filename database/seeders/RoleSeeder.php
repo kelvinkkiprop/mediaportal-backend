@@ -21,6 +21,7 @@ class RoleSeeder extends Seeder
             ['id'=>3, 'name'=>'PCO/PIO','created_at'=>now()],
             ['id'=>4, 'name'=>'QA','created_at'=>now()],
             ['id'=>5, 'name'=>'Public','created_at'=>now()],
+            ['id'=>6, 'name'=>'Institution','created_at'=>now()],
         ];
         Role::insert($items);
     }

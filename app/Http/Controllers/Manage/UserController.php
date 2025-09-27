@@ -13,8 +13,7 @@ use App\Models\Main\Playlist;
 use App\Models\Settings\Role;
 use App\Models\Settings\UserStatus;
 use App\Models\Settings\AccountType;
-use App\Models\Settings\OrganizationCategory;
-use App\Models\Settings\Organization;
+use App\Models\Settings\InstitutionCategory;
 // Notifications
 use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
@@ -26,8 +25,8 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        return User::orderBy('created_at', 'desc')->with(['role','status','type'])->paginate(10);
+    {;
+        return User::orderBy('created_at', 'desc')->with(['role','status','type','userDevice'])->paginate(10);
     }
 
     /**
@@ -36,33 +35,35 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
             'email' => 'required|string|unique:users,email',
-            'role_id' => 'required|integer',
             'account_type_id' => 'required|integer',
+            'first_name' => 'nullable|required_if:account_type_id,1|string',
+            'last_name' => 'nullable|required_if:account_type_id,1|string',
+            'name' => 'nullable|required_if:account_type_id,2|string',
+            'alias' => 'nullable|string',
+            'institution_category_id' => 'nullable|required_if:account_type_id,2|integer',
+            'institution_id' => 'nullable|required_if:account_type_id,1|string',
+            'role_id' => 'required|integer',
             'password' => 'required|string',
-
-            // 'organization_category_id' => 'nullable|required_if:account_type_id,2|integer',
-            // 'organization_id' => 'nullable|required_if:account_type_id,2|string',
         ]);
 
         $mCurrentUser = auth()->user();
         // $random_password = Str::random(6);
         $random_password = $fields['email'];
         $item = User::create([
+            'email' => $fields['email'],
+            'account_type_id' => $fields['account_type_id'],
             'first_name' => $fields['first_name'],
             'last_name' => $fields['last_name'],
-            'email' => $fields['email'],
+            'name' => $fields['name'],
+            'alias' => $fields['alias'],
+            'institution_category_id' => $fields['institution_category_id'],
+            'institution_id' => $fields['institution_id'],
             'role_id' => $fields['role_id'],
-            'account_type_id' => $fields['account_type_id'],
             'password' => Hash::make($random_password),
             'remember_token' => Str::random(50),
             "email_verified_at" => now(),
             'status_id' => 2,
-
-            // 'organization_category_id' => $fields['organization_category_id'],
-            // 'organization_id' => $fields['organization_id'],
         ]);
 
          //Email
@@ -107,30 +108,32 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $fields = $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
             'email' => 'required|string|unique:users,email,'.$id,
+            'account_type_id' => 'required|integer',
+            'first_name' => 'nullable|required_if:account_type_id,1|string',
+            'last_name' => 'nullable|required_if:account_type_id,1|string',
+            'name' => 'nullable|required_if:account_type_id,2|string',
+            'alias' => 'nullable|string',
+            'institution_category_id' => 'nullable|required_if:account_type_id,2|integer',
+            'institution_id' => 'nullable|required_if:account_type_id,1|string',
             'role_id' => 'required|integer',
             'status_id' => 'required|integer',
-            'account_type_id' => 'required|integer',
             // 'password' => 'required|string',
             'reset_password' => 'required|boolean',
-
-            // 'organization_category_id' => 'nullable|required_if:account_type_id,2|integer',
-            // 'organization_id' => 'nullable|required_if:account_type_id,2|string'
         ]);
 
         $mCurrentUser = auth()->user();
         $item = User::where('id', $id)->update([
+            'email' => $fields['email'],
+            'account_type_id' => $fields['account_type_id'],
             'first_name' => $fields['first_name'],
             'last_name' => $fields['last_name'],
-            'email' => $fields['email'],
+            'name' => $fields['name'],
+            'alias' => $fields['alias'],
+            'institution_category_id' => $fields['institution_category_id'],
+            'institution_id' => $fields['institution_id'],
             'role_id' => $fields['role_id'],
             'status_id' => $fields['status_id'],
-            'account_type_id' => $fields['account_type_id'],
-
-            // 'organization_category_id' => $fields['organization_category_id'],
-            // 'organization_id' => $fields['organization_id'],
         ]);
 
         // $random_password = Str::random(6);
@@ -224,8 +227,18 @@ class UserController extends Controller
         $roles = Role::orderBy('id', 'asc')->get();
         $statuses = UserStatus::orderBy('name', 'asc')->get();
         $account_types = AccountType::orderBy('name', 'asc')->get();
-        $organization_categories = OrganizationCategory::orderBy('name', 'asc')->get();
-        $organizations = Organization::orderBy('name', 'asc')->get();
+        $institution_categories = InstitutionCategory::orderBy('name', 'asc')->get();
+
+        $institutions = null;
+        $mCurrentUser = auth()->user();
+        if ($mCurrentUser) {
+            if($mCurrentUser->role_id==1){ // Super
+                $institutions = User::where('account_type_id', 2)->orderBy('name', 'asc')->get();
+            // }elseif($mCurrentUser->role_id==2){// Admin
+            } else{
+                $institutions = User::where('account_type_id', 2)->where('id', $mCurrentUser->institution_id)->orderBy('name', 'asc')->get();
+            }
+        }
 
         $response =[
             'status' => 'success',
@@ -234,21 +247,13 @@ class UserController extends Controller
                 'roles' => $roles,
                 'statuses' => $statuses,
                 'account_types' => $account_types,
-                'organization_categories' => $organization_categories,
-                'organizations' => $organizations,
+                'institution_categories' => $institution_categories,
+                'institutions' => $institutions,
             ]
         ];
         return response($response, 201);
     }
 
-
-    /**
-     * filterOrganizations
-     */
-    public function filterOrganizations(string $category_id)
-    {
-        return Organization::where('category_id', $category_id)->orderBy('name', 'asc')->get();
-    }
 
     /**
      * analyticsItems
@@ -340,4 +345,13 @@ class UserController extends Controller
         return Playlist::with('mediaPlaylist')->where('user_id', $id)->orderBy('created_at', 'desc')->paginate(10);
     }
 
+
+
+    /**
+     * entityItems
+     */
+    public function entityItems()
+    {
+        return User::with(['media'])->where('account_type_id', 2)->orderBy('name', 'asc')->paginate(10);
+    }
 }

@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             // $table->id();
             $table->uuid('id')->primary();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('username')->unique();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('name')->unique()->nullable();
+            $table->string('alias')->nullable();
+            $table->string('username')->unique()->nullable();
             $table->string('picture')->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
@@ -34,14 +36,12 @@ return new class extends Migration
             $table->date('dob')->nullable();
             $table->longText('bio')->nullable();
 
-            $table->foreignId('referred_by_id')->nullable();
-            $table->string('referral_code')->unique()->nullable();
             $table->boolean('autoplay')->default(true);
             $table->boolean('receive_notifications')->default(true);
 
-            $table->unsignedBigInteger('organization_category_id')->nullable();
-            $table->unsignedBigInteger('organization_id')->nullable();
-            $table->unsignedBigInteger('account_type_id')->default(1);//private/work
+            $table->unsignedBigInteger('account_type_id')->default(1);
+            $table->unsignedBigInteger('institution_category_id')->nullable();
+            $table->unsignedBigInteger('institution_id')->nullable();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

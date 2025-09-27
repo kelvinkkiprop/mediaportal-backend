@@ -25,8 +25,9 @@ return new class extends Migration
             $table->string('mime_type')->nullable();
 
             $table->unsignedBigInteger('media_status_id')->default(1);
-            $table->unsignedBigInteger('status_id')->default(1);
             $table->unsignedBigInteger('views')->default(0);
+            $table->unsignedBigInteger('status_id')->default(1);
+            $table->longText('reject_comments')->nullable();
 
             $table->unsignedBigInteger('type_id')->default(1);// upload|Live|vod
             // $table->unsignedBigInteger('category_id')->default(1);

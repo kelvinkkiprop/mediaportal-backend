@@ -21,6 +21,7 @@ use App\Models\Main\Category;
 use App\Models\Main\MediaCategory;
 use App\Models\Main\Type;
 use App\Models\Settings\ApprovalStatus;
+use App\Models\Settings\UserDevice ;
 
 class MediaController extends Controller
 {
@@ -74,11 +75,14 @@ class MediaController extends Controller
             }
             if ($mCurrentUser) {
                 $latestHistory = MediaHistory::where('media_id', $id)->where('user_id', $mCurrentUser->id)->latest()->first();
+                // $device = UserDevice::where('user_id', $mCurrentUser->id)->first();
+                $device = UserDevice::where('user_id', $mCurrentUser->id)->orderBy('last_login_at', 'desc')->first();
                 if (!$latestHistory && $mCurrentUser) {
                     // no_previous_history
                     MediaHistory::create([
                         'media_id' => $id,
                         'user_id'  => $mCurrentUser->id,
+                        'device_type_id'  => $device->device_type_id,
                     ]);
                 } else {
                     // time_threshold_create_if_older_than_1_min i.e. lt(less_than)
@@ -86,6 +90,7 @@ class MediaController extends Controller
                         MediaHistory::create([
                             'media_id' => $id,
                             'user_id'  => $mCurrentUser->id,
+                            'device_type_id'  => $device->device_type_id,
                         ]);
                     }
                 }
@@ -113,7 +118,7 @@ class MediaController extends Controller
 
         $mCurrentUser = auth()->user();
         $item = Media::where('id', $id)->update([
-            'user_id' => $mCurrentUser->id,
+            'user_id' => $fields['user_id'],
             'title' => $fields['title'],
             'description' => $fields['description'],
             'type_id' => $fields['type_id'],
@@ -122,6 +127,7 @@ class MediaController extends Controller
             'tags' => $fields['tags'],
             'user_id' => $fields['user_id'],
             'allow_comments' => $fields['allow_comments'],
+            'updated_by'     => $mCurrentUser->id,
         ]);
 
         // Update_all
@@ -222,11 +228,10 @@ class MediaController extends Controller
         $users = null;
         if ($mCurrentUser) {
             if($mCurrentUser->role_id==1){ // Super
-                $users = User::orderBy('name', 'asc')->get();
-            }elseif($mCurrentUser->role_id==2){ // Admin
-                $users = User::where('account_type_id', 2)->orderBy('first_name', 'asc')->get();
+                $users = User::where('account_type_id', 2)->orderBy('name', 'asc')->get();
+            // }elseif($mCurrentUser->role_id==2){// Admin
             } else{
-                $users = User::where('id', $mCurrentUser->id)->orderBy('first_name', 'asc')->get();
+                $users = User::where('account_type_id', 2)->where('id', $mCurrentUser->institution_id)->orderBy('name', 'asc')->get();
             }
         }
 
@@ -381,10 +386,12 @@ class MediaController extends Controller
     {
        $fields = $request->validate([
             'status_id' => 'required|integer',
+            'reject_comments' => 'nullable|required_if:status_id,3|string',
         ]);
 
         $item = Media::where('id', $id)->update([
             'status_id' => $fields['status_id'],
+            'reject_comments' => $fields['reject_comments'],
         ]);
 
 
@@ -417,6 +424,15 @@ class MediaController extends Controller
     {
         return Category::with(['mediaCategory','mediaCategory.media'])->find($id);
         // return MediaPlaylist::with(['user','playlist','media'])->orderBy('created_at', 'desc')->get();
+    }
+
+    /**
+     * entityMedia
+     */
+    public function entityMedia(string $id)
+    {
+        return User::with(['media'])->find($id);
+        // return Media::with(['user'])->where('user_id', $id)->orderBy('created_at', 'desc')->get();
     }
 
 
@@ -576,7 +592,7 @@ class MediaController extends Controller
                 'file_size'      => $finalFileSize,
                 'mime_type'      => 'video/mp4',
                 'status_id'      => 1, // Uploaded, pending processing
-                'user_id'        => $mCurrentUser->id,
+                'created_by'     => $mCurrentUser->id,
                 'media_status_id'=> 1, // Uploaded
             ]);
 

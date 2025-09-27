@@ -34,6 +34,7 @@ php artisan make:model Main/Media -m
 php artisan make:model Main/Category -m
 php artisan make:model Main/Type -m
 php artisan make:model Main/MediaCategory -m
+php artisan make:model Main/MediaType -m
 php artisan make:model Main/MediaStatus -m
 php artisan make:model Main/LiveStreamStatus -m
 php artisan make:model Main/MediaReaction -m
@@ -41,15 +42,15 @@ php artisan make:model Main/Playlist -m
 php artisan make:model Main/MediaPlaylist -m
 php artisan make:model Main/MediaComment -m
 php artisan make:model Main/MediaHistory -m
-php artisan make:model Main/Organization -m
-php artisan make:model Main/SpecialityUser -m
+php artisan make:model Main/Institution -m
 php artisan make:model Main/Payment -m
+php artisan make:model Settings/DeviceType -m
+php artisan make:model Settings/UserDevice -m
 php artisan make:model Settings/Role -m
 php artisan make:model Settings/UserStatus -m
 php artisan make:model Settings/AccountType -m
 php artisan make:model Settings/PaymentStatus -m
-php artisan make:model Settings/OrganizationCategory -m
-php artisan make:model Settings/Organization -m
+php artisan make:model Settings/InstitutionCategory -m
 php artisan make:model Settings/Category -m
 php artisan make:model Settings/ApprovalStatus -m
 php artisan make:model Other/County -m

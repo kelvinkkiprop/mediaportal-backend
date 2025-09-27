@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\Settings\UserDevice ;
 // Notifications
 use App\Mail\GenericMail;
 use Illuminate\Support\Facades\Mail;
@@ -46,7 +47,7 @@ class AuthController extends Controller
             <p>Please click the button below to verify your email address and complete your registration:</p>
          </div>";
 
-        //  Email
+        // Email
          $data = array(
             'name' => $user->first_name,
             'subject' => "Verify Your New Account",
@@ -80,7 +81,9 @@ class AuthController extends Controller
     {
         $fields = $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'device_type_id' => 'nullable|integer',
+            'ip_address' => 'nullable|string',
         ]);
 
         $user = User::with(['role','status'])->where('email', $fields['email'])->first();
@@ -103,6 +106,13 @@ class AuthController extends Controller
             $item->status_id = 2;// Active
             $item->save();
         }
+
+        $device = UserDevice::updateOrCreate(['user_id' => $user->id],[
+            'user_id' => $user->id,
+            'device_type_id' => $fields['device_type_id'],
+            'ip_address' => $fields['ip_address'],
+            'login_at' => now(),
+        ]);
 
         // token
         $token = $user->createToken('token')->plainTextToken;

@@ -9,9 +9,11 @@ use Illuminate\Notifications\Notifiable;
 // Add
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
+use App\Models\Main\Media;
 use App\Models\Settings\Role;
 use App\Models\Settings\AccountType;
 use App\Models\Settings\UserStatus;
+use App\Models\Settings\UserDevice;
 use App\Models\Other\County;
 
 class User extends Authenticatable
@@ -36,14 +38,10 @@ class User extends Authenticatable
             if (empty($model->{$model->getKeyName()})) {
                 $model->{$model->getKeyName()} = (string) Str::uuid();
             }
-            // username
-            if (empty($model->username)) {
-                $model->username = static::generateUniqueUsername($model->first_name, $model->last_name);
-            }
-            // referral_code
-            if (empty($model->referral_code)) {
-                $model->referral_code = self::generateUniqueReferralCode();
-            }
+            // // username
+            // if (empty($model->username)) {
+            //     $model->username = static::generateUniqueUsername($model->first_name, $model->last_name);
+            // }
         });
     }
 
@@ -57,6 +55,8 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'username',
+        'name',
+        'alias',
         'email',
         'phone',
         'verification_code',
@@ -72,13 +72,11 @@ class User extends Authenticatable
         'ward_id',
         'bio',
 
-        'referred_by_id',
-        'referral_code',
         'autoplay',
         'receive_notifications',
 
-        'organization_category_id',
-        'organization_id',
+        'institution_category_id',
+        'institution_id',
         'account_type_id',
     ];
 
@@ -110,45 +108,49 @@ class User extends Authenticatable
     * appends
     */
     protected $appends = [
-        'name',
+        'full_name',
+        'total_media',
+        'thumbnail_url',
     ];
 
-    public function getNameAttribute()
+
+   // GETTERS&SETTERS
+    public function getFullNameAttribute()
     {
-        $value = $this->first_name;
+
+        $value1 = $this->first_name;
         $value2 = $this->last_name;
-        if(is_null($value) && is_null($value2)){
+        if(is_null($value1) && is_null($value2)){
+            // return null;
+            $value = $this->name;
+            if(is_null($value)){
+                return null;
+            }
+            return $value;
+        }else{
+            return $value1.' '.$value2;
+        }
+    }
+    public function getTotalMediaAttribute()
+    {
+        $value = $this->media()->count();
+        if(is_null($value)){
             return null;
+        }else{
+            return $value;
         }
-        return $value.' '.$value2;
+    }
+    public function getThumbnailUrlAttribute()
+    {
+        $value = $this->media()->inRandomOrder()->first();
+        if(is_null($value)){
+            return null;
+        }else{
+            $path = config('app.asset_url').config('app.paths.file_download');
+            return $path.$value->id."/thumbnail.jpg";
+        }
     }
 
-     /**
-     * generateUniqueReferralCode
-     */
-    public static function generateUniqueReferralCode(int $length = 8): string
-    {
-        do {
-            $code = strtoupper(Str::random($length));
-        } while (self::where('referral_code', $code)->exists());
-        return $code;
-    }
-
-    /**
-     * generateUniqueUsername
-     */
-    protected static function generateUniqueUsername(string $firstName, string $lastName): string
-    {
-        $baseUsername = Str::slug($firstName . ' ' . $lastName, '_');
-        $username = $baseUsername;
-        $counter = 1;
-        // Check_if_username_exists_append_counter_if_needed
-        while (static::where('username', $username)->exists()) {
-            $username = $baseUsername . '_' . $counter;
-            $counter++;
-        }
-        return $username;
-    }
 
     /**
      * role
@@ -178,19 +180,31 @@ class User extends Authenticatable
         return $this->hasOne(AccountType::class, 'id', 'account_type_id');
     }
 
+
+
     /**
-     * referrals
+     * media
      */
-    public function referrals()
+    public function media()
     {
-        return $this->hasMany(self::class, 'referred_by_id');
+        return $this->hasMany(Media::class, 'user_id', 'id');
     }
 
     /**
-     * referrer
+     * uploadedMedia
      */
-    public function referrer()
+    public function uploadedMedia()
     {
-        return $this->belongsTo(self::class, 'referred_by_id');
+        return $this->hasMany(Media::class, 'created_by');
     }
+
+
+    /**
+     * userDevice
+     */
+    public function userDevice()
+    {
+        return $this->hasMany(UserDevice::class, 'user_id');
+    }
+
 }
