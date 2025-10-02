@@ -167,7 +167,7 @@ class Media extends Model
     {
         // return $this->created_at ? $this->created_at->diffForHumans() : null;
         return $this->created_at ? $this->created_at->diffForHumans([
-            'short' => true,
+            'short' => false,
             'parts' => 1,     // show_1_only_e.g._5s
         ]) : null;
     }
