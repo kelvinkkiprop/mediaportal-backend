@@ -65,10 +65,14 @@ return [
 
     // 'url' => env('APP_URL', 'http://localhost:8000'),
     //Update
-    'url' => env('APP_URL', 'https://cms.konza.go.ke'),
-    'asset_url' => env('ASSET_URL', 'https://api.cms.konza.go.ke'),
-    'live_url' => env('LIVE_URL', 'https://stream.cms.konza.go.ke'),
-    'live_server' => env('LIVE_SERVER', 'rtmp://stream.cms.konza.go.ke/live'),
+    // 'url' => env('APP_URL', 'https://cms.konza.go.ke'),
+    // 'asset_url' => env('ASSET_URL', 'https://api.cms.konza.go.ke'),
+    // 'live_url' => env('LIVE_URL', 'https://stream.cms.konza.go.ke'),
+    // 'live_server' => env('LIVE_SERVER', 'rtmp://stream.cms.konza.go.ke/live'),
+    'url' => env('APP_URL', 'https://govstream.go.ke'),
+    'asset_url' => env('ASSET_URL', 'https://api.govstream.go.ke'),
+    'live_url' => env('LIVE_URL', 'https://stream.govstream.go.ke'),
+    'live_server' => env('LIVE_SERVER', 'rtmp://stream.govstream.go.ke/live'),
 
     /*
     |--------------------------------------------------------------------------
