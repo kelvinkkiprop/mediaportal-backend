@@ -29,6 +29,7 @@ return [
         'http://localhost:4200',      // Frontend_dev
         'http://localhost:8000',      // Backend_local
         'https://cms.konza.go.ke',    // Frontend_prod
+        'https://govstream.go.ke',
     ],
 
     'allowed_origins_patterns' => [],

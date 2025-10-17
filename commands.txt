@@ -129,7 +129,7 @@ $ sudo vim /etc/nginx/sites-available/laravel_mediaportal_backend
 - Open /etc/nginx/sites-available/laravel_mediaportal_backend then paste the code:
 server {
  listen 80;
-    server_name api.cms.konza.go.ke;
+    server_name api.govstream.go.ke;
     root /var/www/html/mediaportal-backend/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
@@ -147,7 +147,7 @@ server {
 
    # CORS for media files (HLS .m3u8 + .ts, plus mp4/webm)
     location ~* \.(m3u8|ts|mp4|webm|ogg)$ {
-        add_header 'Access-Control-Allow-Origin' 'https://cms.konza.go.ke' always;
+        add_header 'Access-Control-Allow-Origin' 'https://govstream.go.ke' always;
         add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
         add_header 'Access-Control-Allow-Headers' 'Range, Origin, Content-Type, Accept' always;
         add_header 'Access-Control-Expose-Headers' 'Content-Length, Content-Range' always;
@@ -250,8 +250,8 @@ rtmp {
             hls_fragment 6s;
             hls_playlist_length 30s;
 
-            on_publish http://api.cms.konza.go.ke/api/streams/verify;
-            on_publish_done http://api.cms.konza.go.ke/api/streams/stop;
+            on_publish http://api.govstream.go.ke/api/streams/verify;
+            on_publish_done http://api.govstream.go.ke/api/streams/stop;
         }
     }
 }
@@ -262,7 +262,7 @@ rtmp {
 
 server {
     listen 8080;
-    server_name stream.cms.konza.go.ke www.stream.cms.konza.go.ke 102.210.148.48;
+    server_name stream.govstream.go.ke www.stream.govstream.go.ke 102.210.148.48;
 
     location /hls {
         alias /var/www/hls;
@@ -334,7 +334,7 @@ Description=FFmpeg HLS Transcoder
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/ffmpeg -i rtmp://stream.cms.konza.go.ke/live/streamkey \
+ExecStart=/usr/bin/ffmpeg -i rtmp://stream.govstream.go.ke/live/streamkey \
   -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k \
   -vf "scale=-2:720" -c:a aac -b:a 128k -ac 2 \
   -f hls -hls_time 6 -hls_list_size 10 -hls_flags delete_segments \
@@ -556,3 +556,10 @@ private function getFFmpegPath(): string
     throw new Exception("FFmpeg not found. Please install FFmpeg and ensure it's accessible.");
 }
 ===============================================./FFMPEG===============================================
+
+
+===============================================ERRORS===============================================
+1. Access to XMLHttpRequest at 'https://api.govstream.go.ke/api/dashboard2' from origin 'https://govstream.go.ke'
+has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+===============================================./ERRORS===============================================
